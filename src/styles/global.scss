@@ -36,10 +36,49 @@ body {
 //     }
 // }
 
+.armBox {
+    text-align: center;
+    margin: 20px auto;
+}
+
 .text-center {
     text-align: center;
 }
 
 .sliderContainer {
     height: 400px;
+}
+
+.Tilt {
+    width: 70%;
+}
+
+.tiltdrone {
+    border: 1px red dotted;
+    padding-bottom: 100%;
+    margin-bottom: 20px;
+
+    background: {
+        image: url('../../images/drone.png');
+        repeat: no-repeat;
+        position: top center;
+        size: contain;
+    }
+}
+
+.logwindow {
+    margin-top: 30px;
+    background-color: #111;
+    color: #eee;
+
+    min-width: 100%;
+
+    padding: 20px 5px;
+
+    font: {
+        family: 'Courier New', Courier, monospace;
+        size: 0.85em;
+    }
+
+    transition: 1ms ease-in-out all;
 }
