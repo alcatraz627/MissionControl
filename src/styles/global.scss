@@ -21,6 +21,10 @@ body {
     background-color: #9FA8DA;
 }
 
+.mapContainer {
+    width: 50vw;
+}
+
 .w-100 {
     width: 100%;
 }
@@ -49,8 +53,11 @@ body {
     height: 400px;
 }
 
-.Tilt {
-    width: 70%;
+.feed {
+    padding-bottom: 80%;
+    background-color: #111;
+    margin: 0 30px;
+    border: 8px solid #757575;
 }
 
 .tiltdrone {

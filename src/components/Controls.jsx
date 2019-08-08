@@ -56,7 +56,7 @@ const Controls = () => {
             </div>
 
             <Grid container>
-                <Grid item lg={4} sm={12}>
+                <Grid item lg={2}>
                     <Container>
                         <div className="sliderContainer">
                             <Slider disabled={!armed} marks={altitudeMarks}
@@ -73,12 +73,12 @@ const Controls = () => {
                     </Container>
                 </Grid>
 
-                <Grid item lg={8} sm={10}>
+                <Grid item lg={2}>
                     <div style={{ padding: '0 20px' }}>
                         <div className="tiltdrone" style={{ transform: `rotateX(${axes.x}deg) rotateY(${axes.y}deg) rotateZ(${axes.z}deg)` }} />
                     </div>
-                    {/* </Grid>
-                <Grid item lg={4} sm={6}> */}
+                    </Grid>
+                <Grid item lg={3}>
                     <Table>
                         <Paper>
                             <TableHead>
@@ -102,6 +102,10 @@ const Controls = () => {
                         </Paper>
                     </Table>
                     {/* {JSON.stringify(axes)} */}
+                </Grid>
+
+                <Grid item lg={5}>
+                    <div className="feed" />
                 </Grid>
 
                 <Grid item xs={12}>
