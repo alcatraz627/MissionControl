@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 
 import _ from 'lodash';
 
-import CommandLog from './CommandLog';
-
-import { Switch, Grid, Container, Slider, TextField, Input, Button } from '@material-ui/core';
+import { Switch, Grid, Container, Slider, TextField, Input, Button, AppBar, Toolbar, Typography } from '@material-ui/core';
 import { Paper, Table, TableHead, TableRow, TableBody, TableCell } from '@material-ui/core';
 
 
@@ -50,9 +48,17 @@ const Controls = () => {
 
     return (
         <div>
+            <AppBar position="static" elevation={1} color={armed?"primary":"secondary"}>
+                <Toolbar>
+                    <Typography variant="h5" color="textSecondary">Mission Control</Typography>
+                </Toolbar>
+            </AppBar>
             <div className="armBox">
                 <Switch size="medium" color={armed ? "primary" : "secondary"} checked={armed} onChange={() => setArmed(!armed)} value="isArmed" />
-                <Button disableRipple disableFocusRipple disableTouchRipple variant={armed ? "contained" : "outlined"} color={armed ? "primary" : "secondary"}>{armed ? "Armed" : "Disarmed"}</Button>
+                <Button disableRipple elevation={0} disableFocusRipple disableTouchRipple
+                // variant={armed ? "contained" : "outlined"} color={armed ? "primary" : "secondary"}
+                variant="outlined" color="primary" disabled={!armed}
+                >{armed ? "Armed" : "Disarmed"}</Button>
             </div>
 
             <Grid container>
@@ -77,10 +83,10 @@ const Controls = () => {
                     <div style={{ padding: '0 20px' }}>
                         <div className="tiltdrone" style={{ transform: `rotateX(${axes.x}deg) rotateY(${axes.y}deg) rotateZ(${axes.z}deg)` }} />
                     </div>
-                    </Grid>
+                </Grid>
                 <Grid item lg={3}>
-                    <Table>
-                        <Paper>
+                    <Paper>
+                        <Table>
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Parameter</TableCell>
@@ -91,25 +97,21 @@ const Controls = () => {
                             <TableBody>
                                 {/* d->external dimension(Pitch, Roll, Yaw), a->(x, y, z) */}
                                 {_.map(AXES_DEF, (d, a) => <TableRow key={a}>
-                                    <TableCell>{d}</TableCell>
+                                    <TableCell color="primary"><Typography variant="body1" color="textPrimary">{d}</Typography></TableCell>
                                     <TableCell>
-                                        <Input disabled={!armed} type="number" name={a} value={axes[a]} onChange={handleAxesUpdate} />
+                                        <Input disabled={!armed} type="number" name={a} value={axes[a]} onChange={handleAxesUpdate}  />
                                     </TableCell>
                                     <TableCell><Button disabled={!armed} onClick={() => handleAxesReset(a)} variant="outlined" color="secondary">Reset</Button></TableCell>
                                 </TableRow>)}
 
                             </TableBody>
-                        </Paper>
-                    </Table>
+                        </Table>
+                    </Paper>
                     {/* {JSON.stringify(axes)} */}
                 </Grid>
 
                 <Grid item lg={5}>
                     <div className="feed" />
-                </Grid>
-
-                <Grid item xs={12}>
-                    <CommandLog />
                 </Grid>
             </Grid>
         </div>

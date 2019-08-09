@@ -15,14 +15,15 @@ body {
 
 .controls {
     background-color: #eee;
+    padding-bottom: 40px;
 }
 
 .maps {
     background-color: #9FA8DA;
 }
 
-.mapContainer {
-    width: 50vw;
+.mapContainer>div {
+    width: 50% !important;
 }
 
 .w-100 {
@@ -42,7 +43,7 @@ body {
 
 .armBox {
     text-align: center;
-    margin: 20px auto;
+    padding: 40px 0;
 }
 
 .text-center {
@@ -54,16 +55,18 @@ body {
 }
 
 .feed {
-    padding-bottom: 80%;
     background-color: #111;
     margin: 0 30px;
+    margin-left: auto;
     border: 8px solid #757575;
+    $size: 500px;
+    height: $size;
+    width: $size;
 }
 
 .tiltdrone {
     border: 1px red dotted;
     padding-bottom: 100%;
-    margin-bottom: 20px;
 
     background: {
         image: url('../../images/drone.png');
@@ -74,7 +77,6 @@ body {
 }
 
 .logwindow {
-    margin-top: 30px;
     background-color: #111;
     color: #eee;
 
