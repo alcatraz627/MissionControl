@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 
-import { PubNubService} from './App';
+import { PubNubServiceProvider } from './App';
 
 import _ from 'lodash';
 
@@ -15,7 +15,14 @@ const AXES_DEF = {
     x: 'Pitch',
     y: 'Roll',
     z: 'Yaw',
-}
+};
+
+const PUBNUB_MESSAGES = {
+    ARM: () => 'arm',
+    ALT: h => `alt ${h}`,
+    LAND: () => 'land',
+    // One for custom typed commands
+};
 
 
 const Controls = () => {
@@ -33,33 +40,24 @@ const Controls = () => {
         z: 0
     })
 
-    // console.log("PubNubService", PubNubService);
-    // console.log("PubNubService->Prov", useContext(PubNubService));
-    const PubNubServiceProvider = useContext(PubNubService);
-    console.log("PubNubServiceProvider", PubNubServiceProvider);
+    const PubNubService = useContext(PubNubServiceProvider);
 
-    // // Only for publishing rn
-    // const UsePubNub = (message) => {
-    //     PubNubService.publish(message);
-    // } 
-
+    PubNubService.subscribe((m) => {
+        console.log('Message from server:', m)
+    })
 
     const handleArmedChange = ({ target: { value } }) => {
         setArmed(!armed);
-
-        let message = "arm";
-        console.log(message);
-        console.log(PubNubServiceProvider);
-        PubNubServiceProvider.publish({message});
-        // UsePubNub(message);
+        PubNubService.publish({ message: PUBNUB_MESSAGES.ARM() });
     }
 
-    const handleAltitudeChange = (event, value) => {
-        setAltitude(value);
-    }
+    const handleAltitudeChange = (event, value) => { _updateAltitude(value) }
 
-    const handleAltitudeChangeText = ({ target: { value } }) => {
+    const handleAltitudeChangeText = ({ target: { value } }) => { _updateAltitude(value) }
+
+    const _updateAltitude = value => {
         setAltitude(Math.max(value, 0));
+        PubNubService.publish({ message: PUBNUB_MESSAGES.ALT(Math.max(value, 0)) });
     }
 
     const handleAxesUpdate = ({ target: { name, value } }) => {

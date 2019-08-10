@@ -48,7 +48,7 @@ export class PubNubService {
         })
     };
 
-    subscribe = ({callback}) => {
+    subscribe = (callback) => {
         this.listeners = {...this.listeners, [callback.toString()]: callback};
         let unsubscribe = () => {delete this.listeners[callback];}
         return unsubscribe;
