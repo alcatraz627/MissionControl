@@ -76,9 +76,10 @@ body {
     }
 }
 
-.logwindow {
+.logwindow, .commandbox {
     background-color: #111;
-    color: #eee;
+    // color: green;
+    color: #39ff14;
 
     min-width: 100%;
 
@@ -92,6 +93,20 @@ body {
     transition: 1ms ease-in-out all;
 }
 
+.logwindow {
+    height: 50vh;
+    overflow: scroll;
+}
+
+.commandbox {
+    border: {
+        width: 0 0 2px 0;
+        style: solid;
+        color: darkgrey;
+    }
+}
+
+
 .navbrand {
 
     color: 'white';
@@ -99,4 +114,8 @@ body {
         weight: 800;
         // family: 'serif';
     }
+}
+
+.commandInput {
+    color: #39ff14;
 }

@@ -8,8 +8,8 @@ import { Switch, Grid, Container, Slider, TextField, Input, Button, AppBar, Tool
 import { Paper, Table, TableHead, TableRow, TableBody, TableCell } from '@material-ui/core';
 
 
-const MIN = 0, MAX = 10000;
-const STEP = (MAX - MIN) / 10;
+const MIN = 0, MAX = 10.0;
+const STEP = (MAX - MIN) / 20;
 
 const AXES_DEF = {
     x: 'Pitch',
