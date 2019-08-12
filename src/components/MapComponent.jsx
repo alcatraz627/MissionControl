@@ -4,7 +4,7 @@ import { PubNubServiceProvider } from './App';
 
 import { PUBNUB_MESSAGES, PUBNUB_RETURNS } from '../constants';
 
-import { Map, GoogleApiWrapper, Marker, InfoWindow } from 'google-maps-react';
+import { Map, GoogleApiWrapper, Marker, InfoWindow, Polyline } from 'google-maps-react';
 
 import droneimg from '../../images/drone.png';
 
@@ -20,12 +20,22 @@ const MapComponent = (props) => {
         lng: 80.23870976488331,
     }
 
+    const [initDroneLocation, setInitDroneLocation] = useState(INIT_POS);
+
     const [droneLocation, setDroneLocation] = useState(INIT_POS);
     const [droneDestination, setDroneDestination] = useState(INIT_POS);
 
     const [isInfoWindowVisible, showInfoWindow] = useState(true);
 
+    const [dronePath, setDronePath] = useState([]);
+
+    const [historyMarkers, setHistoryMarkers] = useState([droneLocation]);
+
     const PubNubService = useContext(PubNubServiceProvider);
+
+    useEffect(() => {
+        setDronePath([...dronePath, droneLocation]);
+    }, [droneLocation])
 
     PubNubService.subscribe(m => {
 
@@ -40,15 +50,17 @@ const MapComponent = (props) => {
     const handleMapClicked = (mapProps, map, { latLng: { lat, lng } }) => {
         PubNubService.publish({ message: PUBNUB_MESSAGES.GOTO(lat(), lng()) });
         setDroneDestination({ lat: lat(), lng: lng() });
+        setInitDroneLocation(droneLocation);
+        setHistoryMarkers([...historyMarkers, droneLocation]);
     }
 
-    // useEffect(() => {
-    //     let i = 0;
-    //     setInterval(() => {
-    //         setDroneLocation({ lat: droneLocation.lat + i * 0.0001, lng: droneLocation.lng + i * 0.0001 });
-    //         i++;
-    //     }, 500);
-    // }, [])
+    useEffect(() => {
+        let i = 0;
+        setInterval(() => {
+            setDroneLocation({ lat: droneLocation.lat + i * 0.0001, lng: droneLocation.lng + i * 0.0001 });
+            i++;
+        }, 500);
+    }, [])
 
 
     return (
@@ -58,7 +70,10 @@ const MapComponent = (props) => {
                 zoom={15.25}
                 style={mapStyle}
                 onClick={handleMapClicked}
-                initialCenter={{ lat: 12.9982637, lng: 80.2324117 }}
+                initialCenter={INIT_POS}
+                rotateControl={true}
+                scaleControl={true}
+                center={droneLocation}
             >
                 <Marker
                     position={droneDestination}
@@ -75,6 +90,11 @@ const MapComponent = (props) => {
 
                 </Marker>
 
+                {historyMarkers.map((e, i) => (
+                    <Marker name={'Drone Initial position'} id="droneInitial" position={e} key={i}
+                        icon={{url: 'http://maps.google.com/mapfiles/ms/icons/green.png'}}></Marker>
+                ))}
+
                 <Marker name={'Drone position'} id="droneCurrent" position={droneLocation}
                     // onClick={() => showInfoWindow(true)}
                     icon={{
@@ -82,6 +102,17 @@ const MapComponent = (props) => {
                         // anchor: new google.maps.Point(32,32),
                         scaledSize: new google.maps.Size(30, 30)
                     }} ></Marker>
+
+                <Polyline path={[initDroneLocation, droneDestination]}
+                    strokeColor="#000000" strokeOpacity={0.8} strokeWeight={2} />
+
+                {/* Actual path - past */}
+                <Polyline path={[...dronePath, droneLocation]}
+                    strokeColor="#39ff14" strokeOpacity={0.5} strokeWeight={4} />
+
+                <Polyline path={[droneLocation, droneDestination]}
+                    strokeColor="yellow" strokeOpacity={0.5} strokeWeight={4} />
+
             </Map>
         </div>
     )

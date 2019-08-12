@@ -17,6 +17,7 @@ const Controls = () => {
 
     const [armed, setArmed] = useState(false);
     const [altitude, setAltitude] = useState(0);
+    const [altitudeText, setAltitudeText] = useState(0);
     const altitudeMarks = _.range(MIN, MAX + 1, STEP).map(e => ({ value: e, label: `${e.toString()}m` }));
 
     // const [pns, setPns] = useState(PubNubService)
@@ -38,13 +39,19 @@ const Controls = () => {
     })
 
     const handleArmedChange = ({ target: { value } }) => {
-        setArmed(!armed);
+        setArmed(true);
         PubNubService.publish({ message: PUBNUB_MESSAGES.ARM() });
     }
 
     const handleAltitudeChange = (event, value) => { _updateAltitude(value) }
 
-    const handleAltitudeChangeText = ({ target: { value } }) => { _updateAltitude(value) }
+    const handleAltitudeChangeText = ({ target: { value } }) => {  setAltitudeText(value) }
+
+    const handleAltitudeTextEnter = (e) => {
+        e.preventDefault();
+        setAltitude(Math.max(parseInt(altitudeText), 0))
+
+    }
 
     const _updateAltitude = value => {
         setAltitude(Math.max(value, 0));
@@ -71,14 +78,10 @@ const Controls = () => {
                 </Toolbar>
             </AppBar>
             <div className="armBox">
-                <Switch size="medium" color={armed ? "primary" : "secondary"} checked={armed} onChange={handleArmedChange} value="isArmed" />
-                <Button disableRipple elevation={0} disableFocusRipple disableTouchRipple
-                    // variant={armed ? "contained" : "outlined"} color={armed ? "primary" : "secondary"}
-                    variant="outlined" color="primary" disabled={!armed}
-                >{armed ? "Armed" : "Disarmed"}</Button>
+                <Button elevation={0} variant="contained" color="primary" onClick={handleArmedChange}>Arm</Button>
                 &nbsp;&nbsp;&nbsp;
                 <Button disableRipple elevation={0} disableFocusRipple disableTouchRipple onClick={handleLand}
-                    variant="contained" color="primary">Land</Button>
+                    variant="outlined" color="secondary">Land</Button>
             </div>
 
             <Grid container>
@@ -94,7 +97,9 @@ const Controls = () => {
                             <br />
                             <br />
                             <br />
-                            <TextField type="number" min="0" disabled={!armed} label="Set Altitude(in m)" value={`${altitude}`} onChange={handleAltitudeChangeText} />
+                            <form onSubmit={handleAltitudeTextEnter}>
+                                <TextField type="number" min="0" disabled={!armed} label="Set Altitude(in m)" value={`${altitudeText}`} onChange={handleAltitudeChangeText} />
+                            </form>
                         </div>
                     </Container>
                 </Grid>

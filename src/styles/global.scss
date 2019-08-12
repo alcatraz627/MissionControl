@@ -24,6 +24,7 @@ body {
 
 .mapContainer>div {
     width: 50% !important;
+    height: 50em !important;
 }
 
 .w-100 {
@@ -94,7 +95,8 @@ body {
 }
 
 .logwindow {
-    height: 50vh;
+    height: 50em !important;
+    // height: 47.7em;
     overflow: scroll;
 }
 

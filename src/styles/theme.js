@@ -5,7 +5,10 @@ import green from '@material-ui/core/colors/green';
 const theme = createMuiTheme({
     palette: {
         // type: 'dark',
-        primary: green,
+        primary: {
+            main: green[500],
+            contrastText: '#fff',
+        },
         text: {
             primary: '#333',
                 // secondary: '#fff',
