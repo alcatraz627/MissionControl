@@ -1,5 +1,7 @@
 import React, { useState, useContext } from 'react';
 
+import {AXES_DEF, PUBNUB_MESSAGES, PUBNUB_RETURNS} from '../constants';
+
 import { PubNubServiceProvider } from './App';
 
 import _ from 'lodash';
@@ -9,21 +11,7 @@ import { Paper, Table, TableHead, TableRow, TableBody, TableCell } from '@materi
 
 
 const MIN = 0, MAX = 10.0;
-const STEP = (MAX - MIN) / 20;
-
-const AXES_DEF = {
-    x: 'Pitch',
-    y: 'Roll',
-    z: 'Yaw',
-};
-
-const PUBNUB_MESSAGES = {
-    ARM: () => 'arm',
-    ALT: h => `alt ${h}`,
-    LAND: () => 'land',
-    // One for custom typed commands
-};
-
+const STEP = (MAX - MIN) / 10;
 
 const Controls = () => {
 
@@ -43,7 +31,10 @@ const Controls = () => {
     const PubNubService = useContext(PubNubServiceProvider);
 
     PubNubService.subscribe((m) => {
-        console.log('Message from server:', m)
+        // console.log('Message from server:', m)
+        if(m.message.split(' ')[0] == PUBNUB_RETURNS.ALTITUDE) {
+            setAltitude(m.message.split(' ')[1])
+        }
     })
 
     const handleArmedChange = ({ target: { value } }) => {
@@ -68,6 +59,9 @@ const Controls = () => {
         setAxes({ ...axes, [name]: 0 })
         // console.log(name)
     }
+    const handleLand = () => {
+        PubNubService.publish({ message: PUBNUB_MESSAGES.LAND() });
+    }
 
     return (
         <div>
@@ -82,6 +76,9 @@ const Controls = () => {
                     // variant={armed ? "contained" : "outlined"} color={armed ? "primary" : "secondary"}
                     variant="outlined" color="primary" disabled={!armed}
                 >{armed ? "Armed" : "Disarmed"}</Button>
+                &nbsp;&nbsp;&nbsp;
+                <Button disableRipple elevation={0} disableFocusRipple disableTouchRipple onClick={handleLand}
+                    variant="contained" color="primary">Land</Button>
             </div>
 
             <Grid container>

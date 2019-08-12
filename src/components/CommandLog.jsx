@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
 
-import {Input} from '@material-ui/core';
+import { Input } from '@material-ui/core';
 
 import { PubNubServiceProvider } from './App';
 
@@ -14,26 +14,26 @@ const CommandLog = () => {
         setLogs([...logs, m])
     })
 
-    const handleCommand = ({target: {value}}) => {
+    const handleCommandUpdate = ({ target: { value } }) => {
         setCommand(value);
     }
 
     const handleRun = (e) => {
         e.preventDefault();
-        PubNubService.publish({message: command});
+        command == 'clear' ? setLogs([]) : PubNubService.publish({ message: command });
         setCommand("");
-        
+
     }
 
     return (
-        <div>
+        <div className="commandLogContainer">
             <form onSubmit={handleRun}>
-            <div className="commandbox">
-                &gt;  <Input value={command} style={{ color: '#39ff14', width: '50%'}} onChange={handleCommand} name="command" placeholder="Enter Command" />
-            </div>
+                <div className="commandbox">
+                    &gt;  <Input value={command} style={{ color: '#39ff14', width: '50%' }} onChange={handleCommandUpdate} name="command" placeholder="Enter Command" />
+                </div>
             </form>
             <div className="logwindow">
-                {logs.map(e => <span>[{new Date().toUTCString()}]&gt;  {e.message}<br /></span>)}
+                {logs.map((e, i) => <span key={i} >[{new Date().toUTCString()}]&gt;  {e.message}<br /></span>)}
             </div>
         </div>)
 }

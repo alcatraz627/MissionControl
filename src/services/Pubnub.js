@@ -15,22 +15,22 @@ export class PubNubService {
      *   
      */
     constructor({publishKey, subscribeKey, channels}) {
-        console.log("Init");
+        // console.log("Init");
         this.pubnub = new PubNub({
             publishKey: publishKey || PUB_KEY,
             subscribeKey: subscribeKey || SUB_KEY,
         });
-        console.log("Connected!");
+        // console.log("Connected!");
 
         this.channels = channels || [DEFAULT_CHANNEL];
         this.pubnub.subscribe({
             channels: this.channels,
         })
-        console.log("Subscribed!");
+        // console.log("Subscribed!");
 
         this.pubnub.addListener({
             message: m => {
-                console.log(m);
+                console.log("Message from PubNub", m.message);
                 Object.keys(this.listeners).map(l => {this.listeners[l](m)})
             }
         })
@@ -44,7 +44,7 @@ export class PubNubService {
         };
 
         this.pubnub.publish(pub_config, (status, resp) => {
-            console.log("Response", status, resp);
+            console.log("PubNub Response:", status, resp);
         })
     };
 
