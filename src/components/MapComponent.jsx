@@ -54,13 +54,13 @@ const MapComponent = (props) => {
         setHistoryMarkers([...historyMarkers, droneLocation]);
     }
 
-    useEffect(() => {
-        let i = 0;
-        setInterval(() => {
-            setDroneLocation({ lat: droneLocation.lat + i * 0.0001, lng: droneLocation.lng + i * 0.0001 });
-            i++;
-        }, 500);
-    }, [])
+    // useEffect(() => {
+    //     let i = 0;
+    //     setInterval(() => {
+    //         setDroneLocation({ lat: droneLocation.lat + i * 0.0001, lng: droneLocation.lng + i * 0.0001 });
+    //         i++;
+    //     }, 500);
+    // }, [])
 
 
     return (
