@@ -119,5 +119,5 @@ const MapComponent = (props) => {
 }
 
 export default GoogleApiWrapper({
-    apiKey: 'AIzaSyBIoUH-Dp2Jxr4a2lxXmLX_SBeGwTHR9XM'
+    apiKey: 'AIzaSyCQRCHHtS442XEbcN16nlZhNEEltRReCBU'
 })(MapComponent);
