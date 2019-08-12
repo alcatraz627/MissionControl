@@ -2,7 +2,7 @@ import React, { useState, useEffect, createContext } from 'react'
 
 // import _ from 'lodash'
 
-import { Grid } from '@material-ui/core';
+import { Grid, AppBar, Toolbar, Typography } from '@material-ui/core';
 
 import Controls from './Controls';
 import MapComponent from './MapComponent';
@@ -24,17 +24,27 @@ const App = () => {
     return (
         <MuiThemeProvider theme={theme}>
             <PubNubServiceProvider.Provider value={pns}>
-                <div className="">
-                    <div className="controls">
-                        <Controls />
-                    </div>
+                <AppBar position="static" elevation={2} 
+                // color={armed ? "primary" : "secondary"}
+                color="primary">
+                    <Toolbar elevation={2}>
+                        <Typography variant="h5" className="navbrand" >Mission Control</Typography>
+                    </Toolbar>
+                </AppBar>
 
+                <div className="">
                     <Grid container>
-                        <Grid item xs={12} lg={6}>
+                        <Grid item xs={12} lg={2}>
+                            <div className="controls">
+                                <Controls />
+                            </div>
+                        </Grid>
+
+                        <Grid item xs={12} lg={5}>
                             <CommandLog />
                         </Grid>
 
-                        <Grid item xs={12} lg={6}>
+                        <Grid item xs={12} lg={5}>
                             <div className="maps">
                                 <MapComponent />
                             </div>

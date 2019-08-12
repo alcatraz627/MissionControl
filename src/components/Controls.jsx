@@ -72,11 +72,6 @@ const Controls = () => {
 
     return (
         <div>
-            <AppBar position="static" elevation={1} color={armed ? "primary" : "secondary"}>
-                <Toolbar>
-                    <Typography variant="h5" className="navbrand" >Mission Control</Typography>
-                </Toolbar>
-            </AppBar>
             <div className="armBox">
                 <Button elevation={0} variant="contained" color="primary" onClick={handleArmedChange}>Arm</Button>
                 &nbsp;&nbsp;&nbsp;
@@ -84,8 +79,8 @@ const Controls = () => {
                     variant="outlined" color="secondary">Land</Button>
             </div>
 
-            <Grid container>
-                <Grid item lg={2}>
+            {/* <Grid container>
+                <Grid item lg={2}> */}
                     <Container>
                         <div className="sliderContainer">
                             <Slider disabled={!armed} marks={altitudeMarks}
@@ -102,9 +97,9 @@ const Controls = () => {
                             </form>
                         </div>
                     </Container>
-                </Grid>
+                {/* </Grid> */}
 
-                <Grid item lg={2}>
+                {/* <Grid item lg={2}>
                     <div style={{ padding: '0 20px' }}>
                         <div className="tiltdrone" style={{ transform: `rotateX(${axes.x}deg) rotateY(${axes.y}deg) rotateZ(${axes.z}deg)` }} />
                     </div>
@@ -120,7 +115,6 @@ const Controls = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {/* d->external dimension(Pitch, Roll, Yaw), a->(x, y, z) */}
                                 {_.map(AXES_DEF, (d, a) => <TableRow key={a}>
                                     <TableCell color="primary"><Typography variant="body1">{d}</Typography></TableCell>
                                     <TableCell>
@@ -131,13 +125,12 @@ const Controls = () => {
                             </TableBody>
                         </Table>
                     </Paper>
-                    {/* {JSON.stringify(axes)} */}
                 </Grid>
 
                 <Grid item lg={5}>
                     <div className="feed" />
-                </Grid>
-            </Grid>
+                </Grid> */}
+            {/* </Grid> */}
         </div>
     )
 }
