@@ -2,6 +2,7 @@ import PubNub from 'pubnub';
 
 
 const DEFAULT_CHANNEL = 'vasu';
+// let PUB_KEY;
 const PUB_KEY = 'pub-c-95e02854-dc3f-4ba2-991f-48756b9475b0';
 const SUB_KEY = 'sub-c-69075804-3f59-11e9-82f9-d2a672cc1cb7';
 

@@ -4,10 +4,9 @@ body {
     margin: 0;
 }
 
-// .center {
-//     text-align: center;
-// }
-
+body {
+    overflow-x: hidden;
+}
 
 [hidden] {
     display: none;
@@ -23,7 +22,7 @@ body {
 }
 
 .mapContainer>div {
-    width: 50% !important;
+    width: 40% !important;
     height: 50em !important;
 }
 
@@ -35,47 +34,19 @@ body {
     height: 100%;
 }
 
-// .ph-a {
-//     padding: {
-//         left: auto;
-//         right: auto;
-//     }
-// }
-
-.armBox {
-    text-align: center;
-    padding: 40px 0;
-}
-
 .text-center {
     text-align: center;
 }
 
-.sliderContainer {
-    height: 400px;
-}
-
-.feed {
-    background-color: #111;
-    margin: 0 30px;
-    margin-left: auto;
-    border: 8px solid #757575;
-    $size: 500px;
-    height: $size;
-    width: $size;
-}
-
-.tiltdrone {
-    border: 1px red dotted;
-    padding-bottom: 100%;
-
-    background: {
-        image: url('../../images/drone.png');
-        repeat: no-repeat;
-        position: top center;
-        size: contain;
-    }
-}
+// .feed {
+//     background-color: #111;
+//     margin: 0 30px;
+//     margin-left: auto;
+//     border: 8px solid #757575;
+//     $size: 500px;
+//     height: $size;
+//     width: $size;
+// }
 
 .logwindow, .commandbox {
     background-color: #111;
@@ -95,17 +66,10 @@ body {
 }
 
 .logwindow {
-    height: 50em !important;
+    // height: 50em !important;
     // height: 47.7em;
-    overflow: scroll;
-}
-
-.commandbox {
-    border: {
-        width: 0 0 2px 0;
-        style: solid;
-        color: darkgrey;
-    }
+    overflow: auto;
+    height: 250px;
 }
 
 
@@ -120,12 +84,4 @@ body {
 
 .commandInput {
     color: #39ff14;
-}
-
-.commandLogContainer {
-    border: {
-        width: 0 10px;
-        color: #333;
-        style: solid;
-    }
 }

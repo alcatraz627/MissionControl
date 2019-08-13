@@ -1,136 +1,112 @@
 import React, { useState, useContext } from 'react';
 
-import {AXES_DEF, PUBNUB_MESSAGES, PUBNUB_RETURNS} from '../constants';
+import { PUBNUB_MESSAGES, PUBNUB_RETURNS } from '../constants';
 
 import { PubNubServiceProvider } from './App';
+import Orientation from './Orientation';
 
 import _ from 'lodash';
 
-import { Switch, Grid, Container, Slider, TextField, Input, Button, AppBar, Toolbar, Typography } from '@material-ui/core';
-import { Paper, Table, TableHead, TableRow, TableBody, TableCell } from '@material-ui/core';
+import { Grid, TextField, Button, Typography, Paper, Divider, CircularProgress } from '@material-ui/core';
+import { blue } from '@material-ui/core/colors';
 
+const Controls = ({ grid_spacing = 2 }) => {
 
-const MIN = 0, MAX = 10.0;
-const STEP = (MAX - MIN) / 10;
-
-const Controls = () => {
-
-    const [armed, setArmed] = useState(false);
-    const [altitude, setAltitude] = useState(0);
-    const [altitudeText, setAltitudeText] = useState(0);
-    const altitudeMarks = _.range(MIN, MAX + 1, STEP).map(e => ({ value: e, label: `${e.toString()}m` }));
-
-    // const [pns, setPns] = useState(PubNubService)
-
-
-    const [axes, setAxes] = useState({
-        x: 0,
-        y: 0,
-        z: 0
-    })
 
     const PubNubService = useContext(PubNubServiceProvider);
 
-    PubNubService.subscribe((m) => {
-        // console.log('Message from server:', m)
-        if(m.message.split(' ')[0] == PUBNUB_RETURNS.ALTITUDE) {
-            setAltitude(m.message.split(' ')[1])
+    // PubNubService.subscribe((m) => {
+    //     // console.log('Message from server:', m)
+    //     if (m.message.split(' ')[0] == PUBNUB_RETURNS.ALTITUDE) {
+    //         setAltitude(m.message.split(' ')[1])
+    //     }
+    // })
+
+    // const handleArmedChange = () => {
+    //     PubNubService.publish({ message: PUBNUB_MESSAGES.ARM() });
+    // }
+
+    const handleCommand = (command) => {
+        console.log(command);
+        PubNubService.publish({ message: command });
+    }
+
+    const CONTROLS = [
+        {
+            label: 'Arm Drone',
+            command: PUBNUB_MESSAGES.ARM(),
+            color: 'primary',
+        },
+        {
+            label: 'Land Drone',
+            command: PUBNUB_MESSAGES.LAND(),
+            color: 'secondary',
+        },
+        {
+            label: 'Return to Launch',
+            command: PUBNUB_MESSAGES.RETURN_TO_LAUNCH(),
+            color: 'default',
+        },
+    ];
+
+    const circ_prog_size = 80;
+
+    const styles = {
+        blue: {
+            color: blue[800],
+        },
+        divider: {
+            margin: '20px 0',
+        },
+        batteryBox: {
+            position: 'relative',
+            display: 'inline-block'
+        },
+        batteryLevel: {
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            textAlign: 'center',
+            lineHeight: `${circ_prog_size}px`,
         }
-    })
-
-    const handleArmedChange = ({ target: { value } }) => {
-        setArmed(true);
-        PubNubService.publish({ message: PUBNUB_MESSAGES.ARM() });
     }
 
-    const handleAltitudeChange = (event, value) => { _updateAltitude(value) }
 
-    const handleAltitudeChangeText = ({ target: { value } }) => {  setAltitudeText(value) }
-
-    const handleAltitudeTextEnter = (e) => {
-        e.preventDefault();
-        setAltitude(Math.max(parseInt(altitudeText), 0))
-
-    }
-
-    const _updateAltitude = value => {
-        setAltitude(Math.max(value, 0));
-        PubNubService.publish({ message: PUBNUB_MESSAGES.ALT(Math.max(value, 0)) });
-    }
-
-    const handleAxesUpdate = ({ target: { name, value } }) => {
-        setAxes({ ...axes, [name]: parseInt(value) })
-    }
-
-    const handleAxesReset = (name) => {
-        setAxes({ ...axes, [name]: 0 })
-        // console.log(name)
-    }
-    const handleLand = () => {
-        PubNubService.publish({ message: PUBNUB_MESSAGES.LAND() });
-    }
 
     return (
         <div>
-            <div className="armBox">
-                <Button elevation={0} variant="contained" color="primary" onClick={handleArmedChange}>Arm</Button>
-                &nbsp;&nbsp;&nbsp;
-                <Button disableRipple elevation={0} disableFocusRipple disableTouchRipple onClick={handleLand}
-                    variant="outlined" color="secondary">Land</Button>
-            </div>
+            <Grid container spacing={8}>
+                <Grid item xs={6}>
+                    <Grid container direction="column" spacing={grid_spacing}>
+                        {CONTROLS.map(e =>
+                            <Grid item xs={12} key={e.command}>
+                                <Button variant="outlined" color={e.color} fullWidth onClick={() => {handleCommand(e.command)}} >{e.label}</Button>
+                            </Grid>
+                        )}
+                        <Grid item>
+                            <Orientation />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={6}>
+                    <Typography variant="subtitle1">Altitude</Typography>
+                    <Typography variant="h3" style={styles.blue}>156m</Typography>
 
-            {/* <Grid container>
-                <Grid item lg={2}> */}
-                    <Container>
-                        <div className="sliderContainer">
-                            <Slider disabled={!armed} marks={altitudeMarks}
-                                defaultValue={80} min={MIN} max={MAX}
-                                value={altitude}
-                                onChange={handleAltitudeChange}
-                                // valueLabelFormat={x=>((x).toString() + 'm')}
-                                orientation="vertical" valueLabelDisplay="on" />
-                            <br />
-                            <br />
-                            <br />
-                            <form onSubmit={handleAltitudeTextEnter}>
-                                <TextField type="number" min="0" disabled={!armed} label="Set Altitude(in m)" value={`${altitudeText}`} onChange={handleAltitudeChangeText} />
-                            </form>
-                        </div>
-                    </Container>
-                {/* </Grid> */}
+                    <Divider style={styles.divider} />
 
-                {/* <Grid item lg={2}>
-                    <div style={{ padding: '0 20px' }}>
-                        <div className="tiltdrone" style={{ transform: `rotateX(${axes.x}deg) rotateY(${axes.y}deg) rotateZ(${axes.z}deg)` }} />
+                    <Typography variant="subtitle1">Heading</Typography>
+                    <Typography variant="h3" style={styles.blue}>30 deg</Typography>
+
+                    <Divider style={styles.divider} />
+
+                    <Typography variant="subtitle1">Battery Remaining</Typography>
+                    <div style={styles.batteryBox}>
+                        <Typography style={{ ...styles.batteryLevel, ...styles.blue }} variant="h6" component="span">40%</Typography>
+                        <CircularProgress style={styles.blue} value={40} size={circ_prog_size} thickness={4} variant="static" />
                     </div>
                 </Grid>
-                <Grid item lg={3}>
-                    <Paper>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Parameter</TableCell>
-                                    <TableCell>Value</TableCell>
-                                    <TableCell>Options</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {_.map(AXES_DEF, (d, a) => <TableRow key={a}>
-                                    <TableCell color="primary"><Typography variant="body1">{d}</Typography></TableCell>
-                                    <TableCell>
-                                        <Input disabled={!armed} type="number" name={a} value={axes[a]} onChange={handleAxesUpdate} />
-                                    </TableCell>
-                                    <TableCell><Button disabled={!armed} onClick={() => handleAxesReset(a)} variant="outlined" color="secondary">Reset</Button></TableCell>
-                                </TableRow>)}
-                            </TableBody>
-                        </Table>
-                    </Paper>
-                </Grid>
+            </Grid>
 
-                <Grid item lg={5}>
-                    <div className="feed" />
-                </Grid> */}
-            {/* </Grid> */}
         </div>
     )
 }

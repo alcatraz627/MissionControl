@@ -12,6 +12,13 @@ const theme = createMuiTheme({
         text: {
             primary: '#333',
                 // secondary: '#fff',
+        },
+    },
+    overrides: {
+        MuiPaper: {
+            rounded: {
+                padding: '24px',
+            }
         }
     }
 })

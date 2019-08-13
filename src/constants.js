@@ -6,9 +6,10 @@ export const AXES_DEF = {
 
 export const PUBNUB_MESSAGES = {
     ARM: () => 'arm',
+    LAND: () => 'land',
+    RETURN_TO_LAUNCH: () => 'rtl',
     // DISARM: () => 'disarm',
     ALT: h => `alt ${h}`,
-    LAND: () => 'land',
     GOTO: (lat, lng) => `goto ${lat} ${lng}`
     // One for custom typed commands
 };
