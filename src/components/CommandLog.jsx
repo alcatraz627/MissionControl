@@ -23,7 +23,6 @@ const CommandLog = () => {
         e.preventDefault();
         command == 'clear' ? setLogs([]) : PubNubService.publish({ message: command });
         setCommand("");
-
     }
 
     return (

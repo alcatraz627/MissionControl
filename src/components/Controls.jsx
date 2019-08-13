@@ -8,22 +8,35 @@ import Orientation from './Orientation';
 import _ from 'lodash';
 
 import { Grid, TextField, Button, Typography, Paper, Divider, CircularProgress } from '@material-ui/core';
-import { blue } from '@material-ui/core/colors';
+import { green, blue, yellow, red } from '@material-ui/core/colors';
 
 const Controls = ({ grid_spacing = 2 }) => {
 
 
+    const [altitude, setAltitude] = useState(0);
+    const [heading, setHeading] = useState(0);
+    const [battery, setBattery] = useState(90);
+
     const PubNubService = useContext(PubNubServiceProvider);
 
-    // PubNubService.subscribe((m) => {
-    //     // console.log('Message from server:', m)
-    //     if (m.message.split(' ')[0] == PUBNUB_RETURNS.ALTITUDE) {
-    //         setAltitude(m.message.split(' ')[1])
-    //     }
-    // })
+    PubNubService.subscribe((m) => {
+        // console.log('Message from server:', m)
+        let decode = m.message.split(' ')
+        switch (decode[0]) {
+            case (PUBNUB_RETURNS.ALTITUDE):
+                setAltitude(Math.max(0, parseInt(decode[1])));
+                break;
+            case (PUBNUB_RETURNS.BATTERY):
+                setBattery(Math.min(100, Math.max(0, parseInt(decode[1]))));
+                break;
+            case (PUBNUB_RETURNS.HEADING):
+                setHeading(parseInt(decode[1]));
+                break;
+        }
+    });
 
     // const handleArmedChange = () => {
-    //     PubNubService.publish({ message: PUBNUB_MESSAGES.ARM() });
+    //     PubNubService.publish({ message: PUBNUB_MESSAGES.ARM() });    
     // }
 
     const handleCommand = (command) => {
@@ -51,9 +64,18 @@ const Controls = ({ grid_spacing = 2 }) => {
 
     const circ_prog_size = 80;
 
-    const styles = {
+    let styles = {
         blue: {
             color: blue[800],
+        },
+        green: {
+            color: green[800],
+        },
+        yellow: {
+            color: yellow[800],
+        },
+        red: {
+            color: red[800],
         },
         divider: {
             margin: '20px 0',
@@ -68,46 +90,51 @@ const Controls = ({ grid_spacing = 2 }) => {
             width: '100%',
             textAlign: 'center',
             lineHeight: `${circ_prog_size}px`,
-        }
+        },
+    };
+
+    const getBatteryColor = val => {
+        if ((val < 100) && val >= 50) return 'green';
+        else if (val < 50 && val >= 20) return 'yellow';
+        else if (val < 20 && val >= 0) return 'red';
+        else return 'blue';
     }
 
 
-
     return (
-        <div>
+        <Paper>
             <Grid container spacing={8}>
                 <Grid item xs={6}>
                     <Grid container direction="column" spacing={grid_spacing}>
                         {CONTROLS.map(e =>
                             <Grid item xs={12} key={e.command}>
-                                <Button variant="outlined" color={e.color} fullWidth onClick={() => {handleCommand(e.command)}} >{e.label}</Button>
+                                <Button variant="outlined" color={e.color} fullWidth onClick={() => { handleCommand(e.command) }} >{e.label}</Button>
                             </Grid>
                         )}
-                        <Grid item>
+                        <Grid item xs={12}>
                             <Orientation />
                         </Grid>
                     </Grid>
                 </Grid>
                 <Grid item xs={6}>
                     <Typography variant="subtitle1">Altitude</Typography>
-                    <Typography variant="h3" style={styles.blue}>156m</Typography>
+                    <Typography variant="h3" style={styles.blue}>{altitude}m</Typography>
 
                     <Divider style={styles.divider} />
 
                     <Typography variant="subtitle1">Heading</Typography>
-                    <Typography variant="h3" style={styles.blue}>30 deg</Typography>
+                    <Typography variant="h3" style={styles.blue}>{heading} deg</Typography>
 
                     <Divider style={styles.divider} />
 
                     <Typography variant="subtitle1">Battery Remaining</Typography>
                     <div style={styles.batteryBox}>
-                        <Typography style={{ ...styles.batteryLevel, ...styles.blue }} variant="h6" component="span">40%</Typography>
-                        <CircularProgress style={styles.blue} value={40} size={circ_prog_size} thickness={4} variant="static" />
+                        <Typography style={{ ...styles.batteryLevel, ...styles[getBatteryColor(battery)] }} variant="h6" component="span">{battery}%</Typography>
+                        <CircularProgress style={styles[getBatteryColor(battery)]} value={battery} size={circ_prog_size} thickness={4} variant="static" />
                     </div>
                 </Grid>
             </Grid>
-
-        </div>
+        </Paper>
     )
 }
 

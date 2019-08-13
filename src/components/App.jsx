@@ -52,7 +52,7 @@ const App = () => {
                 <Navbar />
                 <Grid container style={styles.container} spacing={grid_spacing}>
                     <Grid item xs={12} lg={2}>
-                        <Paper style={styles.h}><AltitudeComponent /></Paper>
+                        <Paper><AltitudeComponent /></Paper>
                         {/* <div className="controls">
                             <Controls />
                         </div> */}
@@ -61,9 +61,7 @@ const App = () => {
                     <Grid item xs={12} lg={5}>
                         <Grid container alignItems="stretch" justify="space-between" direction="column" spacing={grid_spacing}>
                             <Grid item xs={12}>
-                                <Paper style={styles.v}>
-                                    <Controls grid_spacing={grid_spacing} />
-                                </Paper>
+                                <Controls grid_spacing={grid_spacing} />
                             </Grid>
 
                             <Grid item xs={12}>
