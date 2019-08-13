@@ -24,13 +24,13 @@ const Controls = ({ grid_spacing = 2 }) => {
         let decode = m.message.split(' ')
         switch (decode[0]) {
             case (PUBNUB_RETURNS.ALTITUDE):
-                setAltitude(Math.max(0, parseInt(decode[1])));
+                parseInt(decode[1]) && setAltitude(Math.max(0, parseInt(decode[1])));
                 break;
             case (PUBNUB_RETURNS.BATTERY):
-                setBattery(Math.min(100, Math.max(0, parseInt(decode[1]))));
+                parseInt(decode[1]) && setBattery(Math.min(100, Math.max(0, parseInt(decode[1]))));
                 break;
             case (PUBNUB_RETURNS.HEADING):
-                setHeading(parseInt(decode[1]));
+                parseInt(decode[1]) && setHeading(parseInt(decode[1]));
                 break;
         }
     });
