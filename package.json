@@ -6,6 +6,7 @@
   "dependencies": {
     "@material-ui/core": "^4.3.1",
     "css-loader": "^3.0.0",
+    "express": "^4.17.1",
     "file-loader": "^4.0.0",
     "google-maps-react": "^2.0.2",
     "lodash": "^4.17.11",
@@ -18,7 +19,9 @@
     "url-loader": "^2.0.0"
   },
   "scripts": {
-    "start": "webpack-dev-server --config ./webpack.config.js --mode development",
+    "start:react": "webpack-dev-server --config ./webpack.config.js --mode development",
+    "start:express": "nodemon api/server.js",
+    "dev": "concurrently \"npm run start:react\" \"npm run start:express\" ",
     "build": "webpack --mode production"
   },
   "devDependencies": {
@@ -27,6 +30,7 @@
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.6",
+    "concurrently": "^4.1.1",
     "react-hot-loader": "^4.11.0",
     "webpack": "^4.33.0",
     "webpack-cli": "^3.3.4",
