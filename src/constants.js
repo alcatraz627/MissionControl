@@ -10,7 +10,8 @@ export const PUBNUB_MESSAGES = {
     RETURN_TO_LAUNCH: () => 'rtl',
     // DISARM: () => 'disarm',
     ALT: h => `alt ${h}`,
-    GOTO: (lat, lng) => `goto ${lat} ${lng}`
+    GOTO: (lat, lng) => `goto ${lat} ${lng}`,
+    CIRCLE: (radius, turnRate) => `circle ${radius} ${turnRate}`
     // One for custom typed commands
 };
 

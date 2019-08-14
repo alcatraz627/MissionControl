@@ -13,15 +13,21 @@ const LOG_PATH = './api/logs/logs.txt';
 const LOG_ROUTE = '/log';
 
 app.use(bodyParser());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 app.post(LOG_ROUTE, (req, res) => {
     let datetime = new Date();
-    fs.appendFile(LOG_PATH, `\n[${datetime}]> ${req.body.log}`, (err) => {console.log(err); res.end(`${req.body.log}`)})
+    fs.appendFile(LOG_PATH, `\n[${datetime}]> ${req.body.log}`, (err) => {
+        console.log(err);
+        res.end(`${req.body.log}`)
+    })
 });
 
 app.get(LOG_ROUTE, (req, res) => {
-        res.sendFile(__dirname + `/logs/logs.txt`);
+    res.setHeader('content-type', 'text/plain');
+    res.sendFile(__dirname + `/logs/logs.txt`);
 })
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`))

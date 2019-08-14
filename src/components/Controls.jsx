@@ -7,7 +7,7 @@ import Orientation from './Orientation';
 
 import _ from 'lodash';
 
-import { Grid, TextField, Button, Typography, Paper, Divider, CircularProgress } from '@material-ui/core';
+import { Grid, TextField, Button, Typography, Paper, Divider, CircularProgress, Link, Input, InputAdornment } from '@material-ui/core';
 import { green, blue, yellow, red } from '@material-ui/core/colors';
 
 const Controls = ({ grid_spacing = 2 }) => {
@@ -16,6 +16,8 @@ const Controls = ({ grid_spacing = 2 }) => {
     const [altitude, setAltitude] = useState(0);
     const [heading, setHeading] = useState(0);
     const [battery, setBattery] = useState(90);
+
+    const [circleParams, setCircleParams] = useState({ radius: '', turnRate: '' });
 
     const PubNubService = useContext(PubNubServiceProvider);
 
@@ -43,8 +45,20 @@ const Controls = ({ grid_spacing = 2 }) => {
     //     PubNubService.publish({ message: PUBNUB_MESSAGES.ARM() });    
     // }
 
+    const handleCircleParamsChange = ({ target: { name, value } }) => {
+        setCircleParams({ ...circleParams, [name]: Math.max(0, parseInt(value)) || '' });
+    }
+
+    const handleCircleCommand = () => {
+        PubNubService.publish({ message: PUBNUB_MESSAGES.CIRCLE(circleParams.radius, circleParams.turnRate) });
+    }
+
+    const handleCircleCommandSubmit = (e) => {
+        e.preventDefault();
+        handleCircleCommand()
+    }
+
     const handleCommand = (command) => {
-        console.log(command);
         PubNubService.publish({ message: command });
     }
 
@@ -116,6 +130,23 @@ const Controls = ({ grid_spacing = 2 }) => {
                             </Grid>
                         )}
                         <Grid item xs={12}>
+                            <form onSubmit={handleCircleCommandSubmit}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={4}>
+                                        <Input endAdornment={<InputAdornment position="end">m</InputAdornment>} fullWidth placeholder="Radius" value={circleParams.radius} name="radius" onChange={handleCircleParamsChange} />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <Input endAdornment={<InputAdornment position="end">m</InputAdornment>} fullWidth placeholder="Turn Rate" value={circleParams.turnRate} name="turnRate" onChange={handleCircleParamsChange} />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <Button fullWidth variant="outlined" color="default" onClick={handleCircleCommand}>Circle</Button>
+                                    </Grid>
+                                </Grid>
+                            </form>
+                        </Grid>
+                        <Divider />
+                        <Link href="//localhost:3000/log" target="_blank" variant="body2" style={styles.blue}>View Log History</Link>
+                        <Grid item xs={12}>
                             <Orientation />
                         </Grid>
                     </Grid>
@@ -126,8 +157,8 @@ const Controls = ({ grid_spacing = 2 }) => {
 
                     <Divider style={styles.divider} />
 
-                    <Typography variant="subtitle1">Heading</Typography>
-                    <Typography variant="h3" style={styles.blue}>{heading} deg</Typography>
+                    <Typography variant="subtitle1">Camera</Typography>
+                    <Typography variant="h3" style={styles.blue}>{heading * 180 / Math.PI} deg</Typography>
 
                     <Divider style={styles.divider} />
 

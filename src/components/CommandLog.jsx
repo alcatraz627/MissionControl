@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-
+import axios from 'axios';
 import { Input } from '@material-ui/core';
 
 import { PubNubServiceProvider } from './App';
@@ -12,7 +12,10 @@ const CommandLog = () => {
     PubNubService.subscribe((m) => {
         // console.log('Message from server:', m.message)
         // setLogs([...logs, m])
-        setLogs([...logs, `[${new Date().toUTCString()}]> ${m.message}`])
+        let newEntry = `[${new Date().toUTCString()}]> ${m.message}`
+        setLogs([...logs, newEntry])
+        axios.post('//localhost:3000/log', {log: `[${new Date().toUTCString()}]> ${m.message}`})
+            .then((res => {console.log("Logged: ", res)}))
     })
 
     const handleCommandUpdate = ({ target: { value } }) => {
