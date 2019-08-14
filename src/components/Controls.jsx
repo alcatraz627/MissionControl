@@ -21,18 +21,22 @@ const Controls = ({ grid_spacing = 2 }) => {
 
     PubNubService.subscribe((m) => {
         // console.log('Message from server:', m)
-        let decode = m.message.split(' ')
-        switch (decode[0]) {
-            case (PUBNUB_RETURNS.ALTITUDE):
-                parseInt(decode[1]) && setAltitude(Math.max(0, parseInt(decode[1])));
-                break;
-            case (PUBNUB_RETURNS.BATTERY):
-                parseInt(decode[1]) && setBattery(Math.min(100, Math.max(0, parseInt(decode[1]))));
-                break;
-            case (PUBNUB_RETURNS.HEADING):
-                parseInt(decode[1]) && setHeading(parseInt(decode[1]));
-                break;
-        }
+        let decodeArr = m.message.split(',')
+        let decode;
+        decodeArr.map(e => {
+            decode = e.split(' ');
+            switch (decode[0]) {
+                case (PUBNUB_RETURNS.ALTITUDE):
+                    parseInt(decode[1]) && setAltitude(Math.max(0, parseInt(decode[1])));
+                    break;
+                case (PUBNUB_RETURNS.BATTERY):
+                    parseInt(decode[1]) && setBattery(Math.min(100, Math.max(0, parseInt(decode[1]))));
+                    break;
+                case (PUBNUB_RETURNS.HEADING):
+                    parseInt(decode[1]) && setHeading(parseInt(decode[1]));
+                    break;
+            }
+        });
     });
 
     // const handleArmedChange = () => {

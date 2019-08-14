@@ -19,7 +19,7 @@ export const PUBNUB_RETURNS = {
     ARMED: 'armed',
     // DISARMING: 'disarming',
     // DISARMED: 'disarmed',
-    ALTITUDE: 'altis',
+    ALTITUDE: 'alt',
 
     GPSLOG: 'gpslog',
     BATTERY: 'bat',

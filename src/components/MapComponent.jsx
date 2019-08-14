@@ -39,12 +39,17 @@ const MapComponent = (props) => {
 
     PubNubService.subscribe(m => {
 
-        if (m.message.split(' ')[0] == PUBNUB_RETURNS.GPSLOG) {
-            // setDroneLocation({ lat: lat(), lng: lng() });
-            let [tok, lat, lng] = m.message.split(' ');
-            setDroneLocation({ lat: lat, lng: lng });
-        }
-        // console.log(m);
+        let decodeArr = m.message.split(',')
+        let decode;
+        decodeArr.map(e => {
+            decode = e.split(' ');
+            switch (decode[0]) {
+                case (PUBNUB_RETURNS.GPSLOG):
+                    let [tok, lat, lng] = m.message.split(' ');
+                    setDroneLocation({ lat: lat, lng: lng });
+                    break;
+            }
+        });
     })
 
     const handleMapClicked = (mapProps, map, { latLng: { lat, lng } }) => {
@@ -92,7 +97,7 @@ const MapComponent = (props) => {
 
                 {historyMarkers.map((e, i) => (
                     <Marker name={'Drone Initial position'} id="droneInitial" position={e} key={i}
-                        icon={{url: 'http://maps.google.com/mapfiles/ms/icons/green.png'}}></Marker>
+                        icon={{ url: 'http://maps.google.com/mapfiles/ms/icons/green.png' }}></Marker>
                 ))}
 
                 <Marker name={'Drone position'} id="droneCurrent" position={droneLocation}
