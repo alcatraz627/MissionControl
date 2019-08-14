@@ -16,15 +16,12 @@ export const PUBNUB_MESSAGES = {
 };
 
 export const PUBNUB_RETURNS = {
-    ARMING: 'arming',
-    ARMED: 'armed',
-    // DISARMING: 'disarming',
-    // DISARMED: 'disarmed',
     ALTITUDE: 'alt',
 
     GPSLOG: 'gpslog',
-    BATTERY: 'bat',
-    HEADING: 'heading',
+    // BATTERY: 'bat',
+    // HEADING: 'heading',
+    STATUS: 'telemetry',
 }
 
 

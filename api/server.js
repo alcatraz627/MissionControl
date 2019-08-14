@@ -27,7 +27,7 @@ app.post(LOG_ROUTE, (req, res) => {
 
 app.get(LOG_ROUTE, (req, res) => {
     res.setHeader('content-type', 'text/plain');
-    res.sendFile(__dirname + `/logs/logs.txt`);
+    res.download(__dirname + `/logs/logs.txt`);
 })
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`))

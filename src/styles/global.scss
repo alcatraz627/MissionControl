@@ -22,8 +22,8 @@ body {
 }
 
 .mapContainer>div {
-    width: 40% !important;
-    height: 50em !important;
+    width: 49% !important;
+    height: calc(50em - 12px) !important;
 }
 
 .w-100 {

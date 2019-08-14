@@ -51,7 +51,7 @@ const App = () => {
             <PubNubServiceProvider.Provider value={pns}>
                 <Navbar />
                 <Grid container style={styles.container} spacing={grid_spacing}>
-                    <Grid item xs={12} lg={2}>
+                    <Grid item xs={12} lg={1}>
                         <Paper><AltitudeComponent /></Paper>
                         {/* <div className="controls">
                             <Controls />
@@ -72,7 +72,7 @@ const App = () => {
                         {/* <CommandLog /> */}
                     </Grid>
 
-                    <Grid item xs={12} lg={5}>
+                    <Grid item xs={12} lg={6}>
                         <MapComponent />
                         {/* <div className="maps">
                             <MapComponent />

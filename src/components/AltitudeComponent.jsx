@@ -15,6 +15,8 @@ const AltitudeComponent = () => {
 
     const [altitude, setAltitude] = useState(0);
     const [altitudeText, setAltitudeText] = useState(0);
+    // const [scaling, setScaling]
+
     const altitudeMarks = _.range(MIN, MAX + 1, STEP).map(e => ({ value: e, label: `${e.toString()}m` }));
 
     PubNubService.subscribe((m) => {
@@ -56,17 +58,21 @@ const AltitudeComponent = () => {
 
     return (
         <div className="sliderContainer">
-            <Slider marks={altitudeMarks} style={styles.slider}
-                defaultValue={80} min={MIN} max={MAX}
+            <Slider
+             marks={altitudeMarks}
+             defaultValue={80} min={MIN} max={MAX}
+                style={styles.slider}
                 value={altitude}
                 onChange={handleAltitudeChange}
                 // valueLabelFormat={x=>((x).toString() + 'm')}
-                orientation="vertical" valueLabelDisplay="on" />
+                orientation="vertical"
+                 valueLabelDisplay="auto" 
+                 />
             <br />
             <br />
             <br />
             <form onSubmit={handleAltitudeTextEnter}>
-                <TextField type="number" min="0" label="Set Altitude(in m)" value={`${altitudeText}`} onChange={handleAltitudeChangeText} />
+                <TextField type="number" min="0" label="Set Alt(m)" value={`${altitudeText}`} onChange={handleAltitudeChangeText} />
             </form>
         </div>
 

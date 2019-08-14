@@ -1,9 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 
 import { PUBNUB_MESSAGES, PUBNUB_RETURNS } from '../constants';
 
 import { PubNubServiceProvider } from './App';
 import Orientation from './Orientation';
+import Joystick from './Joystick';
 
 import _ from 'lodash';
 
@@ -12,79 +13,14 @@ import { green, blue, yellow, red } from '@material-ui/core/colors';
 
 const Controls = ({ grid_spacing = 2 }) => {
 
-
-    const [altitude, setAltitude] = useState(0);
-    const [heading, setHeading] = useState(0);
-    const [battery, setBattery] = useState(90);
-
-    const [circleParams, setCircleParams] = useState({ radius: '', turnRate: '' });
-
-    const PubNubService = useContext(PubNubServiceProvider);
-
-    PubNubService.subscribe((m) => {
-        // console.log('Message from server:', m)
-        let decodeArr = m.message.split(',')
-        let decode;
-        decodeArr.map(e => {
-            decode = e.split(' ');
-            switch (decode[0]) {
-                case (PUBNUB_RETURNS.ALTITUDE):
-                    parseInt(decode[1]) && setAltitude(Math.max(0, parseInt(decode[1])));
-                    break;
-                case (PUBNUB_RETURNS.BATTERY):
-                    parseInt(decode[1]) && setBattery(Math.min(100, Math.max(0, parseInt(decode[1]))));
-                    break;
-                case (PUBNUB_RETURNS.HEADING):
-                    parseInt(decode[1]) && setHeading(parseInt(decode[1]));
-                    break;
-            }
-        });
-    });
-
-    // const handleArmedChange = () => {
-    //     PubNubService.publish({ message: PUBNUB_MESSAGES.ARM() });    
-    // }
-
-    const handleCircleParamsChange = ({ target: { name, value } }) => {
-        setCircleParams({ ...circleParams, [name]: Math.max(0, parseInt(value)) || '' });
-    }
-
-    const handleCircleCommand = () => {
-        PubNubService.publish({ message: PUBNUB_MESSAGES.CIRCLE(circleParams.radius, circleParams.turnRate) });
-    }
-
-    const handleCircleCommandSubmit = (e) => {
-        e.preventDefault();
-        handleCircleCommand()
-    }
-
-    const handleCommand = (command) => {
-        PubNubService.publish({ message: command });
-    }
-
-    const CONTROLS = [
-        {
-            label: 'Arm Drone',
-            command: PUBNUB_MESSAGES.ARM(),
-            color: 'primary',
-        },
-        {
-            label: 'Land Drone',
-            command: PUBNUB_MESSAGES.LAND(),
-            color: 'secondary',
-        },
-        {
-            label: 'Return to Launch',
-            command: PUBNUB_MESSAGES.RETURN_TO_LAUNCH(),
-            color: 'default',
-        },
-    ];
-
     const circ_prog_size = 80;
 
     let styles = {
         blue: {
             color: blue[800],
+        },
+        blueBorder: {
+            borderColor: blue[800],
         },
         green: {
             color: green[800],
@@ -111,6 +47,81 @@ const Controls = ({ grid_spacing = 2 }) => {
         },
     };
 
+
+
+
+    const [altitude, setAltitude] = useState(0);
+    const [heading, setHeading] = useState(0);
+    const [battery, setBattery] = useState(90);
+    const [orientation, setOrientation] = useState({ pitch: 0, roll: 0, yaw: 0 });
+
+    const [circleParams, setCircleParams] = useState({ radius: '', turnRate: '' });
+
+    const PubNubService = useContext(PubNubServiceProvider);
+
+    PubNubService.subscribe((m) => {
+        let decode;
+        // console.log('Message from server:', m)
+        decode = m.message.split(' ');
+        switch (decode[0]) {
+            case (PUBNUB_RETURNS.STATUS):
+                let [tok, alt, pitch, roll, yaw, bat] = decode;
+                // console.log('decode', decode)
+                // console.log(alt, pitch, roll, yaw, bat);
+
+                if (((alt > 0) && (alt < 0.5)) || (alt < 0)) alt = 0;
+                setAltitude(parseInt(alt));
+                setOrientation({ pitch, roll, yaw });
+                setBattery(parseInt(bat));
+                break;
+        };
+    });
+
+    // useEffect(() => {
+    //     if (((altitide > 0) && (altitide < 0.5)) || (altitide < 0)) setAltitude(0);
+    // }, [altitude]);
+
+    // const handleArmedChange = () => {
+    //     PubNubService.publish({ message: PUBNUB_MESSAGES.ARM() });    
+    // }
+
+    const handleCircleParamsChange = ({ target: { name, value } }) => {
+        setCircleParams({ ...circleParams, [name]: Math.max(0, parseInt(value)) || '' });
+    }
+
+    const handleCircleCommand = () => {
+        ((circleParams.turnRate != '') && (circleParams.radius != '')) && PubNubService.publish({ message: PUBNUB_MESSAGES.CIRCLE(circleParams.radius, circleParams.turnRate) });
+    }
+
+    const handleCircleCommandSubmit = (e) => {
+        e.preventDefault();
+        handleCircleCommand()
+    }
+
+    const handleCommand = (command) => {
+        PubNubService.publish({ message: command });
+
+    }
+
+    const CONTROLS = [
+        {
+            label: 'Arm Drone',
+            command: PUBNUB_MESSAGES.ARM(),
+            color: 'primary',
+        },
+        {
+            label: 'Land Drone',
+            command: PUBNUB_MESSAGES.LAND(),
+            color: 'default',
+            style: {...styles.blue, ...styles.blueBorder},
+        },
+        {
+            label: 'Return to Launch',
+            command: PUBNUB_MESSAGES.RETURN_TO_LAUNCH(),
+            color: 'default',
+        },
+    ];
+
     const getBatteryColor = val => {
         if ((val < 100) && val >= 50) return 'green';
         else if (val < 50 && val >= 20) return 'yellow';
@@ -126,7 +137,7 @@ const Controls = ({ grid_spacing = 2 }) => {
                     <Grid container direction="column" spacing={grid_spacing}>
                         {CONTROLS.map(e =>
                             <Grid item xs={12} key={e.command}>
-                                <Button variant="outlined" color={e.color} fullWidth onClick={() => { handleCommand(e.command) }} >{e.label}</Button>
+                                <Button variant="outlined" color={e.color} style={e.style} fullWidth onClick={() => { handleCommand(e.command) }} >{e.label}</Button>
                             </Grid>
                         )}
                         <Grid item xs={12}>
@@ -145,28 +156,47 @@ const Controls = ({ grid_spacing = 2 }) => {
                             </form>
                         </Grid>
                         <Divider />
-                        <Link href="//localhost:3000/log" target="_blank" variant="body2" style={styles.blue}>View Log History</Link>
+                        <Link href="//localhost:3000/log" target="_blank" variant="body2" style={styles.blue}>Download Log History</Link>
                         <Grid item xs={12}>
-                            <Orientation />
+                            <Orientation orientation={orientation} />
                         </Grid>
                     </Grid>
                 </Grid>
                 <Grid item xs={6}>
-                    <Typography variant="subtitle1">Altitude</Typography>
-                    <Typography variant="h3" style={styles.blue}>{altitude}m</Typography>
+                    <Grid container>
+                        <Grid item xs={6}>
 
-                    <Divider style={styles.divider} />
+                            <Typography variant="subtitle1">Current Altitude</Typography>
+                            <Typography variant="h3" style={styles.blue}>{altitude}m</Typography>
 
-                    <Typography variant="subtitle1">Camera</Typography>
-                    <Typography variant="h3" style={styles.blue}>{heading * 180 / Math.PI} deg</Typography>
+                            <Divider style={styles.divider} />
+                        </Grid>
+                        <Grid item xs={6}>
 
-                    <Divider style={styles.divider} />
+                            <Typography variant="subtitle1">Camera</Typography>
+                            <Typography variant="h3" style={styles.blue}>{heading * 180 / Math.PI} deg</Typography>
 
-                    <Typography variant="subtitle1">Battery Remaining</Typography>
-                    <div style={styles.batteryBox}>
-                        <Typography style={{ ...styles.batteryLevel, ...styles[getBatteryColor(battery)] }} variant="h6" component="span">{battery}%</Typography>
-                        <CircularProgress style={styles[getBatteryColor(battery)]} value={battery} size={circ_prog_size} thickness={4} variant="static" />
-                    </div>
+                            <Divider style={styles.divider} />
+                        </Grid>
+                        <Grid item xs={6}>
+
+                            <Typography variant="subtitle1">Battery Remaining</Typography>
+                            <div style={styles.batteryBox}>
+                                <Typography style={{ ...styles.batteryLevel, ...styles[getBatteryColor(battery)] }} variant="h6" component="span">{battery}%</Typography>
+                                <CircularProgress style={styles[getBatteryColor(battery)]} value={battery} size={circ_prog_size} thickness={4} variant="static" />
+                            </div>
+                            <Divider style={styles.divider} />
+                        </Grid>
+                        <Grid item xs={6}>
+
+                            <Typography variant="subtitle1">Manual Control</Typography>
+                            <Joystick />
+                            <Divider style={styles.divider} />
+                        </Grid>
+                        {/* <Grid item xs={12}>
+                            a
+                        </Grid> */}
+                    </Grid>
                 </Grid>
             </Grid>
         </Paper>

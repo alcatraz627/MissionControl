@@ -1,9 +1,9 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { PUBNUB_MESSAGES, PUBNUB_RETURNS, AXES_DEF } from '../constants';
 
 import droneImg from '../../images/drone.png';
 
-const Orientation = () => {
+const Orientation = ({ orientation }) => {
     const [axes, setAxes] = useState({
         x: 0,
         y: 0,
@@ -20,7 +20,15 @@ const Orientation = () => {
     //     // console.log(name)
     // }
 
-    const img_size = 200;
+    useEffect(() => {
+        setAxes({
+            x: orientation.pitch,
+            y: orientation.roll,
+            z: orientation.yaw
+        });
+    }, [orientation.pitch, orientation.roll, orientation.yaw])
+
+    const img_size = 130;
     const styles = {
         tiltDrone: {
             // border: '1px red dotted',
@@ -35,7 +43,7 @@ const Orientation = () => {
             backgroundPosition: 'top center',
             backgroundSize: 'contain',
 
-            transform: `rotateX(${axes.x}deg) rotateY(${axes.y}deg) rotateZ(${axes.z}deg)`,
+            transform: `rotateX(${axes.x}rad) rotateY(${axes.y}rad) rotateZ(${axes.z}rad)`,
         }
     }
 
