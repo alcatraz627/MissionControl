@@ -30,7 +30,7 @@ export class PubNubService {
 
         this.pubnub.addListener({
             message: m => {
-                console.log("Message from PubNub", m.message);
+                // console.log("Message from PubNub", m.message);
                 Object.keys(this.listeners).map(l => {this.listeners[l](m)})
             }
         })
@@ -44,7 +44,7 @@ export class PubNubService {
         };
 
         this.pubnub.publish(pub_config, (status, resp) => {
-            console.log("PubNub Response:", status, resp);
+            // console.log("PubNub Response:", status, resp);
         })
     };
 

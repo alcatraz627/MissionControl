@@ -51,7 +51,7 @@ const AltitudeComponent = () => {
     const styles = {
         slider: {
             minHeight: '300px',
-            height: '67vh',
+            height: '39.5em',
             marginTop: '20px',
         }
     }

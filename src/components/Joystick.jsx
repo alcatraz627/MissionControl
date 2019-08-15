@@ -1,39 +1,33 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
+import { PubNubServiceProvider } from './App';
+
+import {useInterval, useKeyPress} from '../services/effects';
 
 const Joystick = () => {
     const boxSize = 82;
 
-    const KEYS = { w: 'w', a: 'a', s: 's', d: 'd' };
+    // const KEYS = { w: 'w', a: 'a', s: 's', d: 'd' };
 
     const [deltas, setDeltas] = useState({ x: 0, y: 0 });
 
+    const PubNubService = useContext(PubNubServiceProvider);
 
-    function useKeyPress(targetKey) {
-
-        const [keyPressed, setKeyPressed] = useState(false);
-        function downHandler({ key }) {
-            if (key === targetKey) {
-                setKeyPressed(true);
-            }
-        }
-        const upHandler = ({ key }) => {
-            if (key === targetKey) {
-                setKeyPressed(false);
-            }
-        };
-
-
-        useEffect(() => {
-            window.addEventListener('keydown', downHandler);
-            window.addEventListener('keyup', upHandler);
-            return () => {
-                window.removeEventListener('keydown', downHandler);
-                window.removeEventListener('keyup', upHandler);
-            };
-        }, []);
-
-        return keyPressed;
+    const sigX = {
+        "-1": 'l',
+        "0": '-',
+        "1": 'r',
     }
+    const sigY = {
+        "-1": 'b',
+        "0": '-',
+        "1": 'f',
+    }
+
+    useInterval(() => {
+        // console.log(`${sigX[deltas.x]}${sigY[deltas.y]}`)
+        ((deltas.y != 0) || (deltas.x != 0)) && PubNubService.publish({ message: `${sigY[deltas.y]}${sigX[deltas.x]}` })
+    }, 500)
+
 
     const wPress = useKeyPress('w');
     const sPress = useKeyPress('s');
@@ -42,7 +36,7 @@ const Joystick = () => {
 
 
     useEffect(() => {
-        setDeltas({ x: 1 * aPress - 1 * dPress, y: 1 * wPress - 1 * sPress })
+        setDeltas({ x: 1 * dPress - 1 * aPress, y: 1 * wPress - 1 * sPress })
     }, [wPress, aPress, sPress, dPress]);
 
     const styles = {
@@ -60,7 +54,7 @@ const Joystick = () => {
             borderRadius: '1000px',
             backgroundColor: 'red',
             top: `${boxSize * ((1 - 1 / 6) / 2) * (1 - deltas.y)}px`,
-            left: `${boxSize * ((1 - 1 / 6) / 2) * (1 - deltas.x)}px`,
+            left: `${boxSize * ((1 - 1 / 6) / 2) * (1 + deltas.x)}px`,
         }
     }
 

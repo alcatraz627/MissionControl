@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 
 import { PUBNUB_MESSAGES, PUBNUB_RETURNS } from '../constants';
+import { useKeyPress } from '../services/effects';
+
 
 import { PubNubServiceProvider } from './App';
 import Orientation from './Orientation';
@@ -8,8 +10,9 @@ import Joystick from './Joystick';
 
 import _ from 'lodash';
 
-import { Grid, TextField, Button, Typography, Paper, Divider, CircularProgress, Link, Input, InputAdornment } from '@material-ui/core';
+import { Grid, TextField, Button, Typography, Paper, Divider, CircularProgress, Link, Input, InputAdornment, Fab } from '@material-ui/core';
 import { green, blue, yellow, red } from '@material-ui/core/colors';
+import { AddCircle } from '@material-ui/icons';
 
 const Controls = ({ grid_spacing = 2 }) => {
 
@@ -45,9 +48,13 @@ const Controls = ({ grid_spacing = 2 }) => {
             textAlign: 'center',
             lineHeight: `${circ_prog_size}px`,
         },
+        fireButton: {
+            width: '75px',
+            height: '75px',
+            color: '#fff',
+            backgroundColor: red[500],
+        }
     };
-
-
 
 
     const [altitude, setAltitude] = useState(0);
@@ -60,15 +67,16 @@ const Controls = ({ grid_spacing = 2 }) => {
     const PubNubService = useContext(PubNubServiceProvider);
 
     PubNubService.subscribe((m) => {
-        let decode;
-        // console.log('Message from server:', m)
-        decode = m.message.split(' ');
+        // Reads drone status and updates values
+        let decode = m.message.split(' ');
         switch (decode[0]) {
             case (PUBNUB_RETURNS.STATUS):
-                let [tok, alt, pitch, roll, yaw, bat] = decode;
+                let [tok, alt, pitch, roll, yaw, bat] = decode; //Deconstructs and extracts values from the array
                 // console.log('decode', decode)
                 // console.log(alt, pitch, roll, yaw, bat);
 
+                // Negative Altitude Value-> Zero
+                // Altitude Between 0m and 0.5m-> Zero
                 if (((alt > 0) && (alt < 0.5)) || (alt < 0)) alt = 0;
                 setAltitude(parseInt(alt));
                 setOrientation({ pitch, roll, yaw });
@@ -100,7 +108,6 @@ const Controls = ({ grid_spacing = 2 }) => {
 
     const handleCommand = (command) => {
         PubNubService.publish({ message: command });
-
     }
 
     const CONTROLS = [
@@ -113,7 +120,7 @@ const Controls = ({ grid_spacing = 2 }) => {
             label: 'Land Drone',
             command: PUBNUB_MESSAGES.LAND(),
             color: 'default',
-            style: {...styles.blue, ...styles.blueBorder},
+            style: { ...styles.blue, ...styles.blueBorder },
         },
         {
             label: 'Return to Launch',
@@ -128,6 +135,14 @@ const Controls = ({ grid_spacing = 2 }) => {
         else if (val < 20 && val >= 0) return 'red';
         else return 'blue';
     }
+
+    const fireWeapon = useKeyPress(' ');
+
+    const handleFireSignal = () => {
+        PubNubService.publish({ message: PUBNUB_MESSAGES.FIRE() })
+    }
+
+    useEffect(() => { fireWeapon && handleFireSignal() }, [fireWeapon])
 
 
     return (
@@ -188,10 +203,16 @@ const Controls = ({ grid_spacing = 2 }) => {
                             <Divider style={styles.divider} />
                         </Grid>
                         <Grid item xs={6}>
-
+                            {/* <Divider style={styles.divider} /> */}
+                        </Grid>
+                        <Grid item xs={6}>
                             <Typography variant="subtitle1">Manual Control</Typography>
                             <Joystick />
                             <Divider style={styles.divider} />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="subtitle1">Fire Gun</Typography>
+                            <Fab style={styles.fireButton} color="default" onClick={handleFireSignal}><AddCircle /></Fab>
                         </Grid>
                         {/* <Grid item xs={12}>
                             a
