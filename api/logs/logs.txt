@@ -1632,3 +1632,8 @@
 [Thu Aug 15 2019 20:40:53 GMT+0530 (India Standard Time)]> [Thu, 15 Aug 2019 15:10:53 GMT]> fire
 [Thu Aug 15 2019 20:40:57 GMT+0530 (India Standard Time)]> [Thu, 15 Aug 2019 15:10:57 GMT]> fire
 [Thu Aug 15 2019 20:40:58 GMT+0530 (India Standard Time)]> [Thu, 15 Aug 2019 15:10:58 GMT]> move f-
+[Thu Aug 15 2019 20:45:16 GMT+0530 (India Standard Time)]> [Thu, 15 Aug 2019 15:15:16 GMT]> isarmable
+[Thu Aug 15 2019 20:45:21 GMT+0530 (India Standard Time)]> [Thu, 15 Aug 2019 15:15:21 GMT]> arm
+[Thu Aug 15 2019 20:45:24 GMT+0530 (India Standard Time)]> [Thu, 15 Aug 2019 15:15:24 GMT]> armed
+[Thu Aug 15 2019 20:45:28 GMT+0530 (India Standard Time)]> [Thu, 15 Aug 2019 15:15:28 GMT]> move -r
+[Thu Aug 15 2019 20:45:30 GMT+0530 (India Standard Time)]> [Thu, 15 Aug 2019 15:15:30 GMT]> move fr
