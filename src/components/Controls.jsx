@@ -10,7 +10,7 @@ import Joystick from './Joystick';
 
 import _ from 'lodash';
 
-import { Grid, TextField, Button, Typography, Paper, Divider, CircularProgress, Link, Input, InputAdornment, Fab } from '@material-ui/core';
+import { Grid, TextField, Button, Typography, Paper, Divider, CircularProgress, Link, Input, InputAdornment, Fab, Switch } from '@material-ui/core';
 import { green, blue, yellow, red, grey } from '@material-ui/core/colors';
 import { AddCircle } from '@material-ui/icons';
 
@@ -23,6 +23,7 @@ const Controls = ({ grid_spacing = 2, isArmed = false, isArmable = false }) => {
     const fireWeapon = useKeyPress(' ');
 
     const [isFireOn, setFireOn] = useState(false);
+    const [enableFireMode, setEnableFireMode] = useState(false);
     const [altitude, setAltitude] = useState(0);
     const [heading, setHeading] = useState(0);
     const [battery, setBattery] = useState(90);
@@ -66,14 +67,21 @@ const Controls = ({ grid_spacing = 2, isArmed = false, isArmable = false }) => {
             lineHeight: `${circ_prog_size}px`,
         },
         fireButton: {
-            width: `${fireWeapon || isFireOn ? fab_size_small : fab_size_big}px`,
-            height: `${fireWeapon || isFireOn ? fab_size_small : fab_size_big}px`,
-            margin: `${fireWeapon || isFireOn ? (fab_size_big - fab_size_small) / 2 : 0}px`,
+            width: `${isArmed && enableFireMode && (fireWeapon || isFireOn) ? fab_size_small : fab_size_big}px`,
+            height: `${isArmed && enableFireMode && (fireWeapon || isFireOn) ? fab_size_small : fab_size_big}px`,
+            margin: `${isArmed && enableFireMode && (fireWeapon || isFireOn) ? (fab_size_big - fab_size_small) / 2 : 0}px`,
             color: '#fff',
             transition: 'all .07s ease-in-out',
-            backgroundColor: isArmed ? red[500] : grey[500],
-        }
-        // sizeBig: {}
+            backgroundColor: (isArmed && enableFireMode) ? red[500] : grey[500],
+        },
+        fireCrosshairIcon: {
+            width: `${isArmed && enableFireMode && (fireWeapon || isFireOn) ? fab_size_small / 1.5 + 'px' : ''}`,
+            height: `${isArmed && enableFireMode && (fireWeapon || isFireOn) ? fab_size_small / 1.5 + 'px' : ''}`,
+            transition: 'all .07s ease-in-out',
+        },
+        textCenter: {
+            textAlign: 'center',
+        },
     };
 
     PubNubService.subscribe((m) => {
@@ -120,6 +128,10 @@ const Controls = ({ grid_spacing = 2, isArmed = false, isArmable = false }) => {
         PubNubService.publish({ message: command });
     }
 
+    const handleEnableFireModeChange = (target, value) => {
+        setEnableFireMode(value);
+    }
+
     const CONTROLS = [
         {
             label: 'Arm Drone',
@@ -143,25 +155,24 @@ const Controls = ({ grid_spacing = 2, isArmed = false, isArmable = false }) => {
     ];
 
     const getBatteryColor = val => {
-        if (!isArmed) return 'grey';
-
-        if ((val < 100) && val >= 50) return 'green';
-        else if (val < 50 && val >= 20) return 'yellow';
-        else if (val < 20 && val >= 0) return 'red';
-        else return 'blue';
+        if (!isArmed) { return 'grey'; }
+        else {
+            if ((val < 100) && val >= 50) return 'green';
+            else if (val < 50 && val >= 20) return 'yellow';
+            else if (val < 20 && val >= 0) return 'red';
+            else return 'blue';
+        }
     }
 
     const handleFireDown = () => {
-        console.log("Keydown");
         setFireOn(true);
     }
     const handleFireUp = () => {
-        console.log("Keyup");
         setFireOn(false);
     }
 
     useInterval(() => {
-        (fireWeapon || isFireOn) && PubNubService.publish({ message: PUBNUB_MESSAGES.FIRE() });
+        (enableFireMode && (fireWeapon || isFireOn)) && PubNubService.publish({ message: PUBNUB_MESSAGES.FIRE() });
     }, 300)
 
 
@@ -203,14 +214,14 @@ const Controls = ({ grid_spacing = 2, isArmed = false, isArmable = false }) => {
                         <Grid item xs={6}>
 
                             <Typography variant="subtitle1">Current Altitude</Typography>
-                            <Typography variant="h3" style={isArmed?styles.blue:{}} color="textSecondary">{altitude}m</Typography>
+                            <Typography variant="h3" style={isArmed ? styles.blue : {}} color="textSecondary">{altitude}m</Typography>
 
                             <Divider style={styles.divider} />
                         </Grid>
                         <Grid item xs={6}>
 
                             <Typography variant="subtitle1">Camera</Typography>
-                            <Typography variant="h3" style={isArmed?styles.blue:{}} color="textSecondary">{heading * 180 / Math.PI} deg</Typography>
+                            <Typography variant="h3" style={isArmed ? styles.blue : {}} color="textSecondary">{heading * 180 / Math.PI} deg</Typography>
 
                             <Divider style={styles.divider} />
                         </Grid>
@@ -224,20 +235,22 @@ const Controls = ({ grid_spacing = 2, isArmed = false, isArmable = false }) => {
                             {/* <Divider style={styles.divider} /> */}
                         </Grid>
                         <Grid item xs={6}>
-                            {/* <Divider style={styles.divider} /> */}
+                            <Typography variant="subtitle1">Enable Fire Mode</Typography>
+                            <Switch disabled={!isArmed} onKeyPress={(e) => { e.preventDefault() }} onKeyDown={(e) => { e.preventDefault() }} color="primary" value={enableFireMode} onChange={handleEnableFireModeChange} />
+                            <Typography variant="overline">{enableFireMode ? 'Enabled' : 'Disabled'}</Typography>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={6} style={styles.textCenter}>
+                            <Divider style={styles.divider} />
                             <Typography variant="subtitle1">Manual Control</Typography>
                             <Joystick isArmed={isArmed} />
                             {/* <Divider style={styles.divider} /> */}
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={6} style={styles.textCenter}>
+                            <Divider style={styles.divider} />
                             <Typography variant="subtitle1">Fire Gun</Typography>
-                            <Fab disabled={!isArmed} disableTouchRipple disableFocusRipple disableRipple style={styles.fireButton} color="default" onMouseDown={handleFireDown} onMouseUp={handleFireUp}><AddCircle /></Fab>
+                            <Fab disabled={!isArmed || !enableFireMode} disableTouchRipple disableFocusRipple disableRipple style={styles.fireButton} color="default" onMouseDown={handleFireDown} onMouseUp={handleFireUp}>
+                                <AddCircle style={styles.fireCrosshairIcon} /></Fab>
                         </Grid>
-                        {/* <Grid item xs={12}>
-                            a
-                        </Grid> */}
                     </Grid>
                 </Grid>
             </Grid>

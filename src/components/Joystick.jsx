@@ -51,6 +51,7 @@ const Joystick = ({ isArmed = false }) => {
             borderRadius: '10px',
             backgroundColor: '#ff8a8035',
             position: 'relative',
+            margin: 'auto',
         },
         joystickBall: {
             position: 'absolute',

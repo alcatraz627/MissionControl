@@ -22,7 +22,7 @@ const pns = new PubNubService({});
 
 const App = () => {
     const [isArmable, setIsArmable] = useState(false);
-    const [isArmed, setIsArmed] = useState(false);
+    const [isArmed, setIsArmed] = useState(true);
 
     useEffect(() => {
         pns.subscribe((m) => {

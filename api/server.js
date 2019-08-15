@@ -13,9 +13,7 @@ const LOG_PATH = './api/logs/logs.txt';
 const LOG_ROUTE = '/log';
 
 app.use(bodyParser());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.post(LOG_ROUTE, (req, res) => {
     let datetime = new Date();
@@ -23,7 +21,7 @@ app.post(LOG_ROUTE, (req, res) => {
         err && console.log('err', err);
         res.end(`${req.body.log}`)
     })
-});
+})
 
 app.get(LOG_ROUTE, (req, res) => {
     res.setHeader('content-type', 'text/plain');
