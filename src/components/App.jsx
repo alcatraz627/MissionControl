@@ -7,12 +7,13 @@ import grey from '@material-ui/core/colors/grey';
 
 import Navbar from './Navbar';
 import AltitudeComponent from './AltitudeComponent';
-import Orientation from './Orientation';
 import Controls from './Controls';
 import MapComponent from './MapComponent';
 import CommandLog from './CommandLog';
 
 import { PubNubService } from '../services/Pubnub';
+
+import { PUBNUB_RETURNS } from '../constants';
 
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import theme from '../styles/theme';
@@ -20,27 +21,25 @@ import theme from '../styles/theme';
 const pns = new PubNubService({});
 
 const App = () => {
+    const [isArmable, setIsArmable] = useState(false);
+    const [isArmed, setIsArmed] = useState(false);
+
     useEffect(() => {
-        // console.log(pns);
-        // pns.subscribe({callback: (message) => {console.log("Hooyeah", message)}})
-        // pns.publish({message: "EeeE"})
+        pns.subscribe((m) => {
+            if (m.message == PUBNUB_RETURNS.ISARMABLE) {
+                setIsArmable(true);
+            }
+            if (m.message == PUBNUB_RETURNS.ARMED) {
+                setIsArmed(true);
+            }
+        })
     }, [])
+
 
     const styles = {
         container: {
             padding: '20px',
             backgroundColor: grey[50],
-        },
-
-        h: {
-            // width: '100%',
-            // padding: '16px',
-            // height: '70vh',
-        },
-        v: {
-            // height: '100%',
-            // padding: '16px',
-            // height: '70vh',
         }
     }
 
@@ -49,34 +48,26 @@ const App = () => {
     return (
         <MuiThemeProvider theme={theme}>
             <PubNubServiceProvider.Provider value={pns}>
-                <Navbar />
+                <Navbar isArmed={isArmed} />
                 <Grid container style={styles.container} spacing={grid_spacing}>
                     <Grid item xs={12} lg={1}>
-                        <Paper><AltitudeComponent /></Paper>
-                        {/* <div className="controls">
-                            <Controls />
-                        </div> */}
+                        <Paper><AltitudeComponent isArmed={isArmed} /></Paper>
                     </Grid>
 
                     <Grid item xs={12} lg={5}>
                         <Grid container alignItems="stretch" justify="space-between" direction="column" spacing={grid_spacing}>
                             <Grid item xs={12}>
-                                <Controls grid_spacing={grid_spacing} />
+                                <Controls grid_spacing={grid_spacing} isArmable={isArmable} isArmed={isArmed} />
                             </Grid>
 
                             <Grid item xs={12}>
                                 <CommandLog />
                             </Grid>
-
                         </Grid>
-                        {/* <CommandLog /> */}
                     </Grid>
 
                     <Grid item xs={12} lg={6}>
-                        <MapComponent />
-                        {/* <div className="maps">
-                            <MapComponent />
-                        </div> */}
+                        <MapComponent isArmed={isArmed} />
                     </Grid>
                 </Grid>
             </PubNubServiceProvider.Provider>

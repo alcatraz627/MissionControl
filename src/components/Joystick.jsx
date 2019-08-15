@@ -4,7 +4,7 @@ import { PubNubServiceProvider } from './App';
 import { useInterval, useKeyPress } from '../services/effects';
 import { PUBNUB_MESSAGES } from '../constants';
 
-const Joystick = () => {
+const Joystick = ({ isArmed = false }) => {
     const boxSize = 82;
 
     // const KEYS = { w: 'w', a: 'a', s: 's', d: 'd' };
@@ -40,11 +40,12 @@ const Joystick = () => {
 
 
     useEffect(() => {
-        setDeltas({ x: 1 * dPress - 1 * aPress, y: 1 * wPress - 1 * sPress })
+        isArmed && setDeltas({ x: 1 * dPress - 1 * aPress, y: 1 * wPress - 1 * sPress })
     }, [wPress, aPress, sPress, dPress]);
 
     const styles = {
         joystickContainer: {
+            opacity: isArmed ? 1 : 0.2,
             width: `${boxSize}px`,
             height: `${boxSize}px`,
             borderRadius: '10px',

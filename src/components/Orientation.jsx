@@ -3,7 +3,7 @@ import { PUBNUB_MESSAGES, PUBNUB_RETURNS, AXES_DEF } from '../constants';
 
 import droneImg from '../../images/drone.png';
 
-const Orientation = ({ orientation }) => {
+const Orientation = ({ orientation, isArmed }) => {
     const [axes, setAxes] = useState({
         x: 0,
         y: 0,
@@ -42,6 +42,7 @@ const Orientation = ({ orientation }) => {
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'top center',
             backgroundSize: 'contain',
+            opacity: isArmed?1:0.3,
 
             transform: `rotateX(${axes.x}rad) rotateY(${axes.y}rad) rotateZ(${axes.z}rad)`,
         }

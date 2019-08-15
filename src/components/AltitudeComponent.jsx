@@ -8,7 +8,7 @@ import { PubNubServiceProvider } from './App';
 
 const MIN = 0, MAX = 10.0;
 
-const AltitudeComponent = () => {
+const AltitudeComponent = ({isArmed=false}) => {
 
     const PubNubService = useContext(PubNubServiceProvider);
 
@@ -71,9 +71,10 @@ const AltitudeComponent = () => {
     return (
         <div className="sliderContainer">
             <form onSubmit={handleMaxAltitudeSet}>
-                <TextField type="number" min="0" label="Max Range" helperText="Set max range" value={maxText} onChange={handleMaxTextChange} />
+                <TextField disabled={!isArmed} type="number" min="0" label="Max Range" helperText="Set max range" value={maxText} onChange={handleMaxTextChange} />
             </form>
             <Slider
+                disabled={!isArmed}
                 marks={altitudeMarks}
                 min={MIN} max={max}
                 style={styles.slider}
@@ -87,7 +88,7 @@ const AltitudeComponent = () => {
             <br />
             <br />
             <form onSubmit={handleAltitudeTextEnter}>
-                <TextField type="number" min="0" label="Set Alt(m)" value={`${altitudeText}`} onChange={handleAltitudeChangeText} />
+                <TextField disabled={!isArmed} type="number" min="0" label="Set Alt(m)" value={`${altitudeText}`} onChange={handleAltitudeChangeText} />
             </form>
         </div>
 

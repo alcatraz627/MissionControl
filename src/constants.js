@@ -17,8 +17,9 @@ export const PUBNUB_MESSAGES = {
 };
 
 export const PUBNUB_RETURNS = {
+    ISARMABLE: 'isarmable',
+    ARMED: 'armed',
     ALTITUDE: 'alt',
-
     GPSLOG: 'gpslog',
     // BATTERY: 'bat',
     // HEADING: 'heading',

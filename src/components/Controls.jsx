@@ -11,10 +11,10 @@ import Joystick from './Joystick';
 import _ from 'lodash';
 
 import { Grid, TextField, Button, Typography, Paper, Divider, CircularProgress, Link, Input, InputAdornment, Fab } from '@material-ui/core';
-import { green, blue, yellow, red } from '@material-ui/core/colors';
+import { green, blue, yellow, red, grey } from '@material-ui/core/colors';
 import { AddCircle } from '@material-ui/icons';
 
-const Controls = ({ grid_spacing = 2 }) => {
+const Controls = ({ grid_spacing = 2, isArmed = false, isArmable = false }) => {
 
     const circ_prog_size = 80;
     const fab_size_big = 80;
@@ -48,6 +48,9 @@ const Controls = ({ grid_spacing = 2 }) => {
         red: {
             color: red[800],
         },
+        grey: {
+            color: grey[500],
+        },
         divider: {
             margin: '20px 0',
         },
@@ -68,7 +71,7 @@ const Controls = ({ grid_spacing = 2 }) => {
             margin: `${fireWeapon || isFireOn ? (fab_size_big - fab_size_small) / 2 : 0}px`,
             color: '#fff',
             transition: 'all .07s ease-in-out',
-            backgroundColor: red[500],
+            backgroundColor: isArmed ? red[500] : grey[500],
         }
         // sizeBig: {}
     };
@@ -122,21 +125,26 @@ const Controls = ({ grid_spacing = 2 }) => {
             label: 'Arm Drone',
             command: PUBNUB_MESSAGES.ARM(),
             color: 'primary',
+            enabled: isArmable,
         },
         {
             label: 'Land Drone',
             command: PUBNUB_MESSAGES.LAND(),
             color: 'default',
-            style: { ...styles.blue, ...styles.blueBorder },
+            enabled: isArmed,
+            style: isArmed ? { ...styles.blue, ...styles.blueBorder } : {},
         },
         {
             label: 'Return to Launch',
             command: PUBNUB_MESSAGES.RETURN_TO_LAUNCH(),
+            enabled: isArmed,
             color: 'default',
         },
     ];
 
     const getBatteryColor = val => {
+        if (!isArmed) return 'grey';
+
         if ((val < 100) && val >= 50) return 'green';
         else if (val < 50 && val >= 20) return 'yellow';
         else if (val < 20 && val >= 0) return 'red';
@@ -164,20 +172,21 @@ const Controls = ({ grid_spacing = 2 }) => {
                     <Grid container direction="column" spacing={grid_spacing}>
                         {CONTROLS.map(e =>
                             <Grid item xs={12} key={e.command}>
-                                <Button variant="outlined" color={e.color} style={e.style} fullWidth onClick={() => { handleCommand(e.command) }} >{e.label}</Button>
+                                <Button disabled={!e.enabled} variant="outlined" style={e.style} fullWidth
+                                    color={(e.command == PUBNUB_MESSAGES.ARM() ? isArmable : isArmed) ? e.color : 'default'} onClick={() => { handleCommand(e.command) }} >{e.label}</Button>
                             </Grid>
                         )}
                         <Grid item xs={12}>
                             <form onSubmit={handleCircleCommandSubmit}>
                                 <Grid container spacing={2}>
                                     <Grid item xs={4}>
-                                        <Input endAdornment={<InputAdornment position="end">m</InputAdornment>} fullWidth placeholder="Radius" value={circleParams.radius} name="radius" onChange={handleCircleParamsChange} />
+                                        <Input disabled={!isArmed} endAdornment={<InputAdornment position="end">m</InputAdornment>} fullWidth placeholder="Radius" value={circleParams.radius} name="radius" onChange={handleCircleParamsChange} />
                                     </Grid>
                                     <Grid item xs={4}>
-                                        <Input endAdornment={<InputAdornment position="end">m</InputAdornment>} fullWidth placeholder="Turn Rate" value={circleParams.turnRate} name="turnRate" onChange={handleCircleParamsChange} />
+                                        <Input disabled={!isArmed} endAdornment={<InputAdornment position="end">m</InputAdornment>} fullWidth placeholder="Turn Rate" value={circleParams.turnRate} name="turnRate" onChange={handleCircleParamsChange} />
                                     </Grid>
                                     <Grid item xs={4}>
-                                        <Button fullWidth variant="outlined" color="default" onClick={handleCircleCommand}>Circle</Button>
+                                        <Button disabled={!isArmed} fullWidth variant="outlined" color="default" onClick={handleCircleCommand}>Circle</Button>
                                     </Grid>
                                 </Grid>
                             </form>
@@ -185,7 +194,7 @@ const Controls = ({ grid_spacing = 2 }) => {
                         <Divider />
                         <Link href="//localhost:3000/log" target="_blank" variant="body2" style={styles.blue}>Download Log History</Link>
                         <Grid item xs={12}>
-                            <Orientation orientation={orientation} />
+                            <Orientation orientation={orientation} isArmed={isArmed} />
                         </Grid>
                     </Grid>
                 </Grid>
@@ -194,14 +203,14 @@ const Controls = ({ grid_spacing = 2 }) => {
                         <Grid item xs={6}>
 
                             <Typography variant="subtitle1">Current Altitude</Typography>
-                            <Typography variant="h3" style={styles.blue}>{altitude}m</Typography>
+                            <Typography variant="h3" style={isArmed?styles.blue:{}} color="textSecondary">{altitude}m</Typography>
 
                             <Divider style={styles.divider} />
                         </Grid>
                         <Grid item xs={6}>
 
                             <Typography variant="subtitle1">Camera</Typography>
-                            <Typography variant="h3" style={styles.blue}>{heading * 180 / Math.PI} deg</Typography>
+                            <Typography variant="h3" style={isArmed?styles.blue:{}} color="textSecondary">{heading * 180 / Math.PI} deg</Typography>
 
                             <Divider style={styles.divider} />
                         </Grid>
@@ -210,7 +219,7 @@ const Controls = ({ grid_spacing = 2 }) => {
                             <Typography variant="subtitle1">Battery Remaining</Typography>
                             <div style={styles.batteryBox}>
                                 <Typography style={{ ...styles.batteryLevel, ...styles[getBatteryColor(battery)] }} variant="h6" component="span">{battery}%</Typography>
-                                <CircularProgress style={styles[getBatteryColor(battery)]} value={battery} size={circ_prog_size} thickness={4} variant="static" />
+                                <CircularProgress disabled={!isArmed} style={styles[getBatteryColor(battery)]} value={battery} size={circ_prog_size} thickness={4} variant="static" />
                             </div>
                             {/* <Divider style={styles.divider} /> */}
                         </Grid>
@@ -219,12 +228,12 @@ const Controls = ({ grid_spacing = 2 }) => {
                         </Grid>
                         <Grid item xs={6}>
                             <Typography variant="subtitle1">Manual Control</Typography>
-                            <Joystick />
+                            <Joystick isArmed={isArmed} />
                             {/* <Divider style={styles.divider} /> */}
                         </Grid>
                         <Grid item xs={6}>
                             <Typography variant="subtitle1">Fire Gun</Typography>
-                            <Fab disableTouchRipple disableFocusRipple disableRipple style={styles.fireButton} color="default" onMouseDown={handleFireDown} onMouseUp={handleFireUp}><AddCircle /></Fab>
+                            <Fab disabled={!isArmed} disableTouchRipple disableFocusRipple disableRipple style={styles.fireButton} color="default" onMouseDown={handleFireDown} onMouseUp={handleFireUp}><AddCircle /></Fab>
                         </Grid>
                         {/* <Grid item xs={12}>
                             a

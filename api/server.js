@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({
 app.post(LOG_ROUTE, (req, res) => {
     let datetime = new Date();
     fs.appendFile(LOG_PATH, `\n[${datetime}]> ${req.body.log}`, (err) => {
-        console.log(err);
+        err && console.log('err', err);
         res.end(`${req.body.log}`)
     })
 });
