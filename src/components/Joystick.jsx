@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { PubNubServiceProvider } from './App';
 
-import {useInterval, useKeyPress} from '../services/effects';
+import { useInterval, useKeyPress } from '../services/effects';
+import { PUBNUB_MESSAGES } from '../constants';
 
 const Joystick = () => {
     const boxSize = 82;
@@ -23,11 +24,14 @@ const Joystick = () => {
         "1": 'f',
     }
 
-    useInterval(() => {
+    const moveDrone = () => {
         // console.log(`${sigX[deltas.x]}${sigY[deltas.y]}`)
-        ((deltas.y != 0) || (deltas.x != 0)) && PubNubService.publish({ message: `${sigY[deltas.y]}${sigX[deltas.x]}` })
-    }, 500)
+        PubNubService.publish({ message: PUBNUB_MESSAGES.MOVE(`${sigY[deltas.y]}${sigX[deltas.x]}`) })
+    }
 
+    useInterval(() => {
+        ((deltas.y != 0) || (deltas.x != 0)) && moveDrone()
+    }, 500)
 
     const wPress = useKeyPress('w');
     const sPress = useKeyPress('s');
@@ -43,7 +47,7 @@ const Joystick = () => {
         joystickContainer: {
             width: `${boxSize}px`,
             height: `${boxSize}px`,
-            borderRadius: '1000px',
+            borderRadius: '10px',
             backgroundColor: '#ff8a8035',
             position: 'relative',
         },
@@ -55,13 +59,30 @@ const Joystick = () => {
             backgroundColor: 'red',
             top: `${boxSize * ((1 - 1 / 6) / 2) * (1 - deltas.y)}px`,
             left: `${boxSize * ((1 - 1 / 6) / 2) * (1 + deltas.x)}px`,
+        },
+        xAxis: {
+            position: 'absolute',
+            width: `${boxSize - 60}px`,
+            height: `2px`,
+            backgroundColor: '#999',
+            top: `${boxSize / 2 - 1}px`,
+            left: '30px',
+        },
+        yAxis: {
+            position: 'absolute',
+            width: `2px`,
+            height: `${boxSize - 60}px`,
+            backgroundColor: '#999',
+            top: '30px',
+            left: `${boxSize / 2 - 1}px`,
         }
     }
 
     return (
         <div style={styles.joystickContainer}>
-            <div style={styles.joystickBall}>
-            </div>
+            <div style={styles.xAxis} />
+            <div style={styles.yAxis} />
+            <div style={styles.joystickBall} />
         </div>
 
     )

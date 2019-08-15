@@ -12,6 +12,7 @@ export const PUBNUB_MESSAGES = {
     GOTO: (lat, lng) => `goto ${lat} ${lng}`,
     CIRCLE: (radius, turnRate) => `circle ${radius} ${turnRate}`,
     FIRE: () => 'fire',
+    MOVE: (dir) => `move ${dir}`,
     // TODO: One for custom typed commands
 };
 

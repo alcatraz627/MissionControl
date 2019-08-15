@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 
 import { PUBNUB_MESSAGES, PUBNUB_RETURNS } from '../constants';
-import { useKeyPress } from '../services/effects';
+import { useKeyPress, useInterval } from '../services/effects';
 
 
 import { PubNubServiceProvider } from './App';
@@ -17,6 +17,20 @@ import { AddCircle } from '@material-ui/icons';
 const Controls = ({ grid_spacing = 2 }) => {
 
     const circ_prog_size = 80;
+    const fab_size_big = 80;
+    const fab_size_small = 60;
+
+    const fireWeapon = useKeyPress(' ');
+
+    const [isFireOn, setFireOn] = useState(false);
+    const [altitude, setAltitude] = useState(0);
+    const [heading, setHeading] = useState(0);
+    const [battery, setBattery] = useState(90);
+    const [orientation, setOrientation] = useState({ pitch: 0, roll: 0, yaw: 0 });
+
+    const [circleParams, setCircleParams] = useState({ radius: '', turnRate: '' });
+
+    const PubNubService = useContext(PubNubServiceProvider);
 
     let styles = {
         blue: {
@@ -49,22 +63,15 @@ const Controls = ({ grid_spacing = 2 }) => {
             lineHeight: `${circ_prog_size}px`,
         },
         fireButton: {
-            width: '75px',
-            height: '75px',
+            width: `${fireWeapon || isFireOn ? fab_size_small : fab_size_big}px`,
+            height: `${fireWeapon || isFireOn ? fab_size_small : fab_size_big}px`,
+            margin: `${fireWeapon || isFireOn ? (fab_size_big - fab_size_small) / 2 : 0}px`,
             color: '#fff',
+            transition: 'all .07s ease-in-out',
             backgroundColor: red[500],
         }
+        // sizeBig: {}
     };
-
-
-    const [altitude, setAltitude] = useState(0);
-    const [heading, setHeading] = useState(0);
-    const [battery, setBattery] = useState(90);
-    const [orientation, setOrientation] = useState({ pitch: 0, roll: 0, yaw: 0 });
-
-    const [circleParams, setCircleParams] = useState({ radius: '', turnRate: '' });
-
-    const PubNubService = useContext(PubNubServiceProvider);
 
     PubNubService.subscribe((m) => {
         // Reads drone status and updates values
@@ -136,13 +143,18 @@ const Controls = ({ grid_spacing = 2 }) => {
         else return 'blue';
     }
 
-    const fireWeapon = useKeyPress(' ');
-
-    const handleFireSignal = () => {
-        PubNubService.publish({ message: PUBNUB_MESSAGES.FIRE() })
+    const handleFireDown = () => {
+        console.log("Keydown");
+        setFireOn(true);
+    }
+    const handleFireUp = () => {
+        console.log("Keyup");
+        setFireOn(false);
     }
 
-    useEffect(() => { fireWeapon && handleFireSignal() }, [fireWeapon])
+    useInterval(() => {
+        (fireWeapon || isFireOn) && PubNubService.publish({ message: PUBNUB_MESSAGES.FIRE() });
+    }, 300)
 
 
     return (
@@ -200,7 +212,7 @@ const Controls = ({ grid_spacing = 2 }) => {
                                 <Typography style={{ ...styles.batteryLevel, ...styles[getBatteryColor(battery)] }} variant="h6" component="span">{battery}%</Typography>
                                 <CircularProgress style={styles[getBatteryColor(battery)]} value={battery} size={circ_prog_size} thickness={4} variant="static" />
                             </div>
-                            <Divider style={styles.divider} />
+                            {/* <Divider style={styles.divider} /> */}
                         </Grid>
                         <Grid item xs={6}>
                             {/* <Divider style={styles.divider} /> */}
@@ -208,11 +220,11 @@ const Controls = ({ grid_spacing = 2 }) => {
                         <Grid item xs={6}>
                             <Typography variant="subtitle1">Manual Control</Typography>
                             <Joystick />
-                            <Divider style={styles.divider} />
+                            {/* <Divider style={styles.divider} /> */}
                         </Grid>
                         <Grid item xs={6}>
                             <Typography variant="subtitle1">Fire Gun</Typography>
-                            <Fab style={styles.fireButton} color="default" onClick={handleFireSignal}><AddCircle /></Fab>
+                            <Fab disableTouchRipple disableFocusRipple disableRipple style={styles.fireButton} color="default" onMouseDown={handleFireDown} onMouseUp={handleFireUp}><AddCircle /></Fab>
                         </Grid>
                         {/* <Grid item xs={12}>
                             a
