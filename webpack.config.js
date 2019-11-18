@@ -3,12 +3,15 @@ const webpack = require('webpack')
 module.exports = {
     entry: './src/index.js',
     module: {
-        rules: [
-            {
+        rules: [{
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'babel-loader'
+                    loader: 'babel-loader',
+                    // https://stackoverflow.com/questions/52541561/module-build-failed-from-node-modules-babel-loader-lib-index-js-error-cann
+                    options: {
+                        presets: ['@babel/preset-react']
+                    },
                 }
             },
             {
