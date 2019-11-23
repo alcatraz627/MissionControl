@@ -23,7 +23,7 @@ body {
 
 .mapContainer>div {
     width: 49% !important;
-    height: calc(50em - 12px) !important;
+    height: calc(40em - 12px) !important;
 }
 
 .w-100 {
@@ -69,7 +69,8 @@ body {
     // height: 50em !important;
     // height: 47.7em;
     overflow: auto;
-    height: 235px;
+    height: 100px;
+    margin-bottom: 16px;
 }
 
 
@@ -84,4 +85,13 @@ body {
 
 .commandInput {
     color: #39ff14;
+}
+
+.streamImage {
+    // max-height: 400px;
+    width: 100%;
+}
+
+.cameraLabel {
+    text-align: center;
 }

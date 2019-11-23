@@ -38,7 +38,6 @@ const AltitudeComponent = ({isArmed=false}) => {
         setAltitude(Math.max(parseInt(altitudeText), 0));
 
         setAltitudeText(altitude);
-
     }
 
     const _updateAltitude = value => {
@@ -63,7 +62,7 @@ const AltitudeComponent = ({isArmed=false}) => {
     const styles = {
         slider: {
             minHeight: '300px',
-            height: '34.7em',
+            height: '39em',
             marginTop: '20px',
         }
     }

@@ -10,6 +10,7 @@ import AltitudeComponent from './AltitudeComponent';
 import Controls from './Controls';
 import MapComponent from './MapComponent';
 import CommandLog from './CommandLog';
+import VideoComponent from './VideoComponent';
 
 import { PubNubService } from '../services/Pubnub';
 
@@ -61,13 +62,21 @@ const App = () => {
                             </Grid>
 
                             <Grid item xs={12}>
-                                <CommandLog />
+                                <VideoComponent />
+                                {/* <img src="http://ec2-13-233-133-20.ap-south-1.compute.amazonaws.com/video" className="streamImage" /> */}
                             </Grid>
                         </Grid>
                     </Grid>
 
                     <Grid item xs={12} lg={6}>
-                        <MapComponent isArmed={isArmed} />
+                        <Grid container>
+                            <Grid item xs={12}>
+                                <CommandLog />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <MapComponent isArmed={isArmed} />
+                            </Grid>
+                        </Grid>
                     </Grid>
                 </Grid>
             </PubNubServiceProvider.Provider>

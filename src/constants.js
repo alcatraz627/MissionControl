@@ -13,6 +13,7 @@ export const PUBNUB_MESSAGES = {
     CIRCLE: (radius, turnRate) => `circle ${radius} ${turnRate}`,
     FIRE: () => 'fire',
     MOVE: (dir) => `move ${dir}`,
+    CAMERA: (dir) => `cam ${dir}`
     // TODO: One for custom typed commands
 };
 
