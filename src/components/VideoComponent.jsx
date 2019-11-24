@@ -65,15 +65,77 @@ const CAMERA_CONTROLS = [
 const VideoComponent = props => {
     const PubNubService = useContext(PubNubServiceProvider);
 
+    const V_MAX = 1850, V_MIN = 1000
+    const H_MAX = 2000, H_MIN = 1000
+    const R_MAX = 2000, R_MIN = 1000
+
+    const DIFF = 50 
+
+    const [vVal, setV] = useState(1500) // Vertical
+    const [hVal, setH] = useState(1500) // Horizontal
+    const [rVal, setR] = useState(1500) // Rotation
+
     const handleUpdateCamera = dir => {
         // console.log(dir)
-        PubNubService.publish({ message: PUBNUB_MESSAGES.CAMERA(dir) });
+        let command = dir, param = ''
+        switch(dir) {
+            case CAMERA_UPDATE_CONTROLS.DOWN.label:
+                param = Math.min(vVal + DIFF, V_MAX)
+                setV(param)
+                command = 'ver'
+                break
+            case CAMERA_UPDATE_CONTROLS.UP.label:
+                param = Math.max(vVal - DIFF, V_MIN)
+                setV(param)
+                command = 'ver'
+                break
+
+            case CAMERA_UPDATE_CONTROLS.RIGHT.label:
+                param = Math.min(hVal + DIFF, H_MAX)
+                setH(param)
+                command = 'hor'
+                break
+            case CAMERA_UPDATE_CONTROLS.LEFT.label:
+                param = Math.max(hVal - DIFF, H_MIN)
+                setH(param)
+                command = 'hor'
+                break
+
+            case CAMERA_UPDATE_CONTROLS.ROT_RIGHT.label:
+                param = Math.min(rVal + DIFF, R_MAX)
+                setR(param)
+                command = 'rot'
+                break
+            case CAMERA_UPDATE_CONTROLS.ROT_LEFT.label:
+                param = Math.max(rVal - DIFF, R_MIN)
+                setR(param)
+                command = 'rot'
+                break
+
+            case CAMERA_UPDATE_CONTROLS.CENTER.label:
+                setH(1500)
+                setV(1500)
+                setR(1500)
+                command = 'center'
+                break
+        }
+        PubNubService.publish({ message: PUBNUB_MESSAGES.CAMERA(command, param) });
+    }
+
+
+    const handleClick = e => {
+          // e = Mouse click event.
+        let rect = e.target.getBoundingClientRect();
+        let x = Math.round((e.clientX - rect.left) * 100 / e.target.width) / 100; //x position within the element.
+        let y = Math.round((e.clientY - rect.top) * 100 / e.target.height) / 100  //y position within the element.
+        console.log("Coord:", x, y)
+        PubNubService.publish({ message: PUBNUB_MESSAGES.CLICK_FRAME(x, y) });
     }
 
     return (
         <Grid container spacing={2}>
             <Grid item xs={8}>
-                <img src="http://ec2-13-233-133-20.ap-south-1.compute.amazonaws.com/video" className="streamImage" />
+                <img src="http://ec2-13-233-133-20.ap-south-1.compute.amazonaws.com:8080/video" className="streamImage" onClick={handleClick} />
             </Grid>
             <Grid item xs={4}>
                 <Paper>
@@ -87,33 +149,6 @@ const VideoComponent = props => {
                                 <Typography variant="subtitle2" component="div" className="cameraLabel" >{label}</Typography>
                             </Grid>
                         )}
-
-                        {/* <Grid item xs={4} alignItems="center">
-                            <Fab size="small" onClick={() => handleUpdateCamera(CAMERA_UPDATE_ENUMS.UP)}><KeyboardArrowUp /></Fab>
-                            <Typography variant="subtitle2" component="div" className="cameraLabel" >Up</Typography>
-                        </Grid>
-                        <Grid item xs={4} alignItems="center">
-                            <Fab size="small" onClick={() => handleUpdateCamera(CAMERA_UPDATE_ENUMS.UP)}><KeyboardArrowUp /></Fab>
-                            <Typography variant="subtitle2" component="div" className="cameraLabel" >Up</Typography>
-                        </Grid>
-                        <Grid item xs={4}></Grid>
-
-                        <Grid item xs={4}>
-                            <Fab size="small" onClick={() => handleUpdateCamera(CAMERA_UPDATE_ENUMS.LEFT)}><KeyboardArrowLeft /></Fab>
-                            <Typography variant="subtitle2" component="div" className="cameraLabel">Left</Typography>
-                        </Grid>
-                        <Grid item xs={4}></Grid>
-                        <Grid item xs={4}>
-                            <Fab size="small"  onClick={() => handleUpdateCamera(CAMERA_UPDATE_ENUMS.RIGHT)}><KeyboardArrowRight/></Fab>
-                            <Typography variant="subtitle2" component="div" className="cameraLabel">Right</Typography>
-                        </Grid>
-
-                        <Grid item xs={4}></Grid>
-                        <Grid item xs={4}>
-                            <Fab size="small" onClick={() => handleUpdateCamera(CAMERA_UPDATE_ENUMS.DOWN)}><KeyboardArrowDown/></Fab>
-                            <Typography variant="subtitle2" component="div" className="cameraLabel">Down</Typography>
-                        </Grid>
-                        <Grid item xs={4}></Grid> */}
 
                     </Grid>
                 </Paper>

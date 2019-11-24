@@ -13,8 +13,9 @@ export const PUBNUB_MESSAGES = {
     CIRCLE: (radius, turnRate) => `circle ${radius} ${turnRate}`,
     FIRE: () => 'fire',
     MOVE: (dir) => `move ${dir}`,
-    CAMERA: (dir) => `cam ${dir}`
-    // TODO: One for custom typed commands
+    CAMERA: (dir, param) => `cam ${dir} ${param}`,
+    CLICK_FRAME: (x, y) => `clickframe ${x} ${y}`,
+    // TODO: One for custom typed commands,
 };
 
 export const PUBNUB_RETURNS = {
