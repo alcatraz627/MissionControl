@@ -89,7 +89,10 @@ body {
 
 .streamImage {
     // max-height: 400px;
+    min-width: 100%;
     width: 100%;
+    background-color: black;
+    // background-image: url('http://ec2-13-233-133-20.ap-south-1.compute.amazonaws.com:8080/uploads/randi.jpg');
 }
 
 .cameraLabel {

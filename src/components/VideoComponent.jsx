@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Grid, Paper, Button, Fab, Typography, Icon } from '@material-ui/core';
+import { Grid, Paper, Button, Fab, Typography, Divider } from '@material-ui/core';
 import { KeyboardArrowUp, KeyboardArrowLeft, KeyboardArrowRight, KeyboardArrowDown, ZoomIn, ZoomOut, RotateLeft, RotateRight, GpsFixed } from '@material-ui/icons';
 
-import { PUBNUB_MESSAGES, PUBNUB_RETURNS } from '../constants';
+import { PUBNUB_MESSAGES, PUBNUB_RETURNS, VIDEO_SERVER_URL } from '../constants';
 
 import { PubNubServiceProvider } from './App';
 
@@ -132,10 +132,14 @@ const VideoComponent = props => {
         PubNubService.publish({ message: PUBNUB_MESSAGES.CLICK_FRAME(x, y) });
     }
 
+    const handleImageCaptureClick = e => {
+        PubNubService.publish({ message: PUBNUB_MESSAGES.CAPTURE_IMAGE() });
+    }
+
     return (
         <Grid container spacing={2}>
             <Grid item xs={8}>
-                <img src="http://ec2-13-233-133-20.ap-south-1.compute.amazonaws.com:8080/video" className="streamImage" onClick={handleClick} />
+                <img src={`${VIDEO_SERVER_URL}/video`} className="streamImage" onClick={handleClick} />
             </Grid>
             <Grid item xs={4}>
                 <Paper>
@@ -151,6 +155,8 @@ const VideoComponent = props => {
                         )}
 
                     </Grid>
+                    <Divider style={{margin: '20px auto'}} />
+                    <Button variant="contained" fullWidth color="primary" onClick={handleImageCaptureClick} >Click Image</Button>
                 </Paper>
             </Grid>
         </Grid>

@@ -14,7 +14,7 @@ import VideoComponent from './VideoComponent';
 
 import { PubNubService } from '../services/Pubnub';
 
-import { PUBNUB_RETURNS } from '../constants';
+import { PUBNUB_RETURNS, VIDEO_SERVER_URL } from '../constants';
 
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import theme from '../styles/theme';
@@ -32,6 +32,9 @@ const App = () => {
             }
             if (m.message == PUBNUB_RETURNS.ARMED) {
                 setIsArmed(true);
+            }
+            if (m.message == PUBNUB_RETURNS.CAPTURED) {
+                window.open(`${VIDEO_SERVER_URL}/uploads/randi.jpg`, '_blank')
             }
         })
     }, [])
@@ -63,7 +66,6 @@ const App = () => {
 
                             <Grid item xs={12}>
                                 <VideoComponent />
-                                {/* <img src="http://ec2-13-233-133-20.ap-south-1.compute.amazonaws.com/video" className="streamImage" /> */}
                             </Grid>
                         </Grid>
                     </Grid>
