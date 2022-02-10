@@ -14,7 +14,7 @@
     "fs": "0.0.1-security",
     "google-maps-react": "^2.0.2",
     "lodash": "^4.17.11",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "pubnub": "^4.24.5",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
